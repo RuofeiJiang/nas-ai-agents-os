@@ -156,5 +156,8 @@ AGPL-3.0
 
 ## 相关
 
-- [AAOS 论文](https://github.com/leobinjones-art/ColoMind) - AI Agents Operating System 理论
+- [AAOS 论文](https://ruofeijiang.github.io/2026/06/28/aaos-overview/) - AI Agents Operating System 理论
+- [AAOS 自发调度问题](https://ruofeijiang.github.io/2026/07/09/spontaneity-problem/) - 自发调度 vs SOP 编排
+- [AAOS 实现篇](https://ruofeijiang.github.io/2026/07/19/ai-agents-os-implementation/) - 从理论到工程实现
+- [Sentinel 论文](https://github.com/RuofeiJiang/sentinel) - 独立安全守护系统
 - [OpenMediaVault](https://www.openmediavault.org/) - NAS 底座
