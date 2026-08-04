@@ -1,0 +1,29 @@
+[{
+	"type": "rpc",
+	"id": "rpc.aaos.query",
+	"params": {
+		"type": "object",
+		"properties": {
+			"input": {"type": "string", "required": false},
+			"confirmation_token": {"type": "string", "required": false}
+		}
+	}
+},{
+	"type": "rpc",
+	"id": "rpc.aaos.status",
+	"params": {"type": "object", "properties": {}}
+},{
+	"type": "rpc",
+	"id": "rpc.aaos.getconfig",
+	"params": {"type": "object", "properties": {}}
+},{
+	"type": "rpc",
+	"id": "rpc.aaos.setconfig",
+	"params": {
+		"type": "object",
+		"properties": {
+			"env": {"type": "object", "required": false},
+			"models_toml": {"type": "string", "required": false}
+		}
+	}
+}]

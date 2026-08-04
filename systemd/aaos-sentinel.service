@@ -1,0 +1,35 @@
+[Unit]
+Description=AAOS Sentinel - global oversight and logging
+Documentation=man:aaos-sentinel(8)
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/aaos-sentinel --socket /run/aaos/sentinel.sock --log-file /var/log/aaos/sentinel.log
+Restart=on-failure
+RestartSec=5
+RuntimeDirectory=aaos
+RuntimeDirectoryMode=0750
+LogsDirectory=aaos
+LogsDirectoryMode=0750
+
+# 安全加固
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+# 运行 ZFS 命令需要 root
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

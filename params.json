@@ -1,0 +1,3698 @@
+{
+ "Apt.getSoftwareSettings": [],
+ "Apt.setSoftwareSettings": [],
+ "Apt.getUpdatesSettings": [],
+ "Apt.setUpdatesSettings": [],
+ "Apt.enumerateUpgraded": [],
+ "Apt.getUpgradedList": [],
+ "Apt.install": [
+  {
+   "name": "packages",
+   "type": "array",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Apt.upgrade": [],
+ "Apt.update": [],
+ "Apt.upload": [
+  {
+   "name": "filename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "filepath",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Apt.getChangeLog": [
+  {
+   "name": "filename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "CertificateMgmt.getList": [],
+ "CertificateMgmt.get": [],
+ "CertificateMgmt.set": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "certificate",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "privatekey",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "CertificateMgmt.delete": [],
+ "CertificateMgmt.getDetail": [],
+ "CertificateMgmt.create": [
+  {
+   "name": "size",
+   "type": "integer",
+   "required": true,
+   "enum": [
+    512,
+    1024,
+    2048,
+    4096
+   ]
+  },
+  {
+   "name": "days",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "c",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "st",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "l",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "o",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ou",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "cn",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "email",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "CertificateMgmt.getSshList": [],
+ "CertificateMgmt.createSsh": [
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "rsa",
+    "ed25519"
+   ]
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "CertificateMgmt.getSsh": [],
+ "CertificateMgmt.setSsh": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "publickey",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "privatekey",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "CertificateMgmt.deleteSsh": [],
+ "CertificateMgmt.copySshId": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hostname",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "port",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "username",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "password",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Config.isDirty": [
+  {
+   "name": "modules",
+   "type": "array",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "Config.applyChanges": [
+  {
+   "name": "modules",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "force",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Config.applyChangesBg": [],
+ "Config.revertChanges": [
+  {
+   "name": "filename",
+   "type": "string",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "Config.revertChangesBg": [],
+ "Config.getlist": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "start",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "limit",
+   "type": [
+    "integer",
+    "null"
+   ],
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sortfield",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "sortdir",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": [
+    "asc",
+    "ASC",
+    "desc",
+    "DESC"
+   ]
+  },
+  {
+   "name": "search",
+   "type": [
+    "string",
+    "integer",
+    "null"
+   ],
+   "required": false,
+   "enum": []
+  }
+ ],
+ "Config.get": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "Config.set": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "data",
+   "type": "object",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Config.delete": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "Cron.getList": [
+  {
+   "name": "start",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "limit",
+   "type": [
+    "integer",
+    "null"
+   ],
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sortfield",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "sortdir",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": [
+    "asc",
+    "ASC",
+    "desc",
+    "DESC"
+   ]
+  },
+  {
+   "name": "type",
+   "type": "array",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Cron.get": [],
+ "Cron.set": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "execution",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "exactly",
+    "hourly",
+    "daily",
+    "weekly",
+    "monthly",
+    "yearly",
+    "reboot"
+   ]
+  },
+  {
+   "name": "sendemail",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "reboot",
+    "shutdown",
+    "standby",
+    "userdefined"
+   ]
+  },
+  {
+   "name": "minute",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everynminute",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hour",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everynhour",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "month",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofmonth",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everyndayofmonth",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofweek",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "username",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "command",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Cron.delete": [],
+ "Cron.execute": [],
+ "DiskMgmt.enumerateDevices": [],
+ "DiskMgmt.getList": [],
+ "DiskMgmt.getListBg": [],
+ "DiskMgmt.getHdParm": [],
+ "DiskMgmt.setHdParm": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "devicefile",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "apm",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "aam",
+   "type": "integer",
+   "required": true,
+   "enum": [
+    0,
+    128,
+    254
+   ]
+  },
+  {
+   "name": "spindowntime",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "writecache",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "DiskMgmt.wipe": [
+  {
+   "name": "devicefile",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "secure",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "DiskMgmt.rescan": [],
+ "EnvVars.enumerate": [],
+ "EnvVars.getList": [],
+ "EnvVars.get": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "EnvVars.set": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "value",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "EnvVars.delete": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "EnvVars.apply": [],
+ "EnvVars.applyBg": [],
+ "Exec.stop": [
+  {
+   "name": "filename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Exec.getOutput": [
+  {
+   "name": "filename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "pos",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "length",
+   "type": "integer",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "Exec.isRunning": [
+  {
+   "name": "filename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Exec.enumerate": [],
+ "Exec.attach": [
+  {
+   "name": "filename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.enumerateFilesystems": [],
+ "FileSystemMgmt.enumerateMountedFilesystems": [
+  {
+   "name": "type",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "includeroot",
+   "type": "boolean",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.getList": [],
+ "FileSystemMgmt.getListBg": [],
+ "FileSystemMgmt.getCandidates": [],
+ "FileSystemMgmt.getCandidatesBg": [],
+ "FileSystemMgmt.getMountCandidates": [],
+ "FileSystemMgmt.create": [
+  {
+   "name": "devicefile",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.createBtrfs": [
+  {
+   "name": "label",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "profile",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "single",
+    "dup",
+    "raid0",
+    "raid1",
+    "raid10"
+   ]
+  },
+  {
+   "name": "devicefiles",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.grow": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.setMountPoint": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "usagewarnthreshold",
+   "type": "number",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.umountByFsName": [
+  {
+   "name": "fsname",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.umountByDir": [
+  {
+   "name": "dir",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.hasFilesystem": [
+  {
+   "name": "devicefile",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FileSystemMgmt.getDetails": [
+  {
+   "name": "devicefile",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FolderBrowser.get": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "mntent",
+    "sharedfolder"
+   ]
+  },
+  {
+   "name": "path",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FsTab.enumerateEntries": [],
+ "FsTab.get": [],
+ "FsTab.set": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "fsname",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dir",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "opts",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "freq",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "passno",
+   "type": "integer",
+   "required": true,
+   "enum": [
+    0,
+    1,
+    2
+   ]
+  },
+  {
+   "name": "usagewarnthreshold",
+   "type": "integer",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "FsTab.delete": [],
+ "FsTab.getByFsName": [
+  {
+   "name": "fsname",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "FsTab.getByDir": [
+  {
+   "name": "dir",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Iptables.getRules": [],
+ "Iptables.setRules": [],
+ "Iptables.getRules6": [],
+ "Iptables.setRules6": [],
+ "Iptables.getRule": [],
+ "Iptables.setRule": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "rulenum",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "chain",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "INPUT",
+    "OUTPUT"
+   ]
+  },
+  {
+   "name": "action",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "ACCEPT",
+    "REJECT",
+    "DROP",
+    "LOG",
+    ""
+   ]
+  },
+  {
+   "name": "family",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "inet",
+    "inet6"
+   ]
+  },
+  {
+   "name": "source",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sport",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "destination",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dport",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "protocol",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Iptables.deleteRule": [],
+ "LogFile.getList": [
+  {
+   "name": "start",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "limit",
+   "type": [
+    "integer",
+    "null"
+   ],
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sortfield",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "sortdir",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": [
+    "asc",
+    "ASC",
+    "desc",
+    "DESC"
+   ]
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "LogFile.clear": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "LogFile.getContent": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getGeneralSettings": [],
+ "Network.setGeneralSettings": [
+  {
+   "name": "hostname",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "domainname",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.enumerateDevices": [],
+ "Network.enumerateDevicesList": [],
+ "Network.enumerateConfiguredDevices": [],
+ "Network.identify": [
+  {
+   "name": "devicename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "seconds",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getInformation": [
+  {
+   "name": "devicename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getInterfaceList": [],
+ "Network.getInterface": [],
+ "Network.deleteInterface": [],
+ "Network.getEthernetCandidates": [],
+ "Network.getEthernetIface": [],
+ "Network.setEthernetIface": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "devicename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "dhcp",
+    "static",
+    "manual"
+   ]
+  },
+  {
+   "name": "address",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method6",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "auto",
+    "static",
+    "manual",
+    "dhcp"
+   ]
+  },
+  {
+   "name": "address6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnsnameservers",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnssearch",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mtu",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "wol",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "altmacaddress",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.enumerateBondSlaves": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "unused",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getBondIface": [],
+ "Network.setBondIface": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "devicename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "dhcp",
+    "static",
+    "manual"
+   ]
+  },
+  {
+   "name": "address",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method6",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "auto",
+    "static",
+    "manual",
+    "dhcp"
+   ]
+  },
+  {
+   "name": "address6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnsnameservers",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnssearch",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mtu",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "wol",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "slaves",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "bondprimary",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "bondmode",
+   "type": "integer",
+   "required": true,
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "name": "bondmiimon",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "bonddowndelay",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "bondupdelay",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getVlanCandidates": [],
+ "Network.getVlanIface": [],
+ "Network.setVlanIface": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "devicename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "dhcp",
+    "static",
+    "manual"
+   ]
+  },
+  {
+   "name": "address",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method6",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "auto",
+    "static",
+    "manual",
+    "dhcp"
+   ]
+  },
+  {
+   "name": "address6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnsnameservers",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnssearch",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mtu",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "wol",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "altmacaddress",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "vlanid",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "vlanrawdevice",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getWirelessCandidates": [],
+ "Network.getWirelessIface": [],
+ "Network.setWirelessIface": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "devicename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "dhcp",
+    "static",
+    "manual"
+   ]
+  },
+  {
+   "name": "address",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method6",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "auto",
+    "static",
+    "manual",
+    "dhcp"
+   ]
+  },
+  {
+   "name": "address6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnsnameservers",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnssearch",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mtu",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "wol",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "altmacaddress",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "band",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "auto",
+    "2.4GHz",
+    "5GHz"
+   ]
+  },
+  {
+   "name": "wpassid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "wpapsk",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "keymanagement",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "psk",
+    "sae"
+   ]
+  },
+  {
+   "name": "hidden",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.enumerateBridgeSlaves": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "unused",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getBridgeIface": [],
+ "Network.setBridgeIface": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "devicename",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "dhcp",
+    "static",
+    "manual"
+   ]
+  },
+  {
+   "name": "address",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "method6",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "auto",
+    "static",
+    "manual",
+    "dhcp"
+   ]
+  },
+  {
+   "name": "address6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "netmask6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gateway6",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "routemetric6",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnsnameservers",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dnssearch",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mtu",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "wol",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "slaves",
+   "type": "array",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Network.getProxy": [],
+ "Network.setProxy": [
+  {
+   "name": "httpenable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httphost",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httpport",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httpusername",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httppassword",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httpsenable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httpshost",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httpsport",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httpsusername",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "httpspassword",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ftpenable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ftphost",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ftpport",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ftpusername",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ftppassword",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "NFS.getSettings": [],
+ "NFS.setSettings": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "versions",
+   "type": "array",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "NFS.getShareList": [],
+ "NFS.getShare": [],
+ "NFS.setShare": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sharedfolderref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mntentref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "client",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "options",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "NFS.deleteShare": [],
+ "NFS.getStats": [],
+ "Notification.getList": [],
+ "Notification.setList": [],
+ "Notification.get": [],
+ "Notification.set": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Notification.isEnabled": [
+  {
+   "name": "id",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Notification.sendTestEmail": [],
+ "PerfStats.get": [],
+ "PerfStats.set": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Plugin.enumeratePlugins": [],
+ "Plugin.getList": [],
+ "Plugin.remove": [],
+ "Plugin.upload": [],
+ "Plugin.install": [],
+ "PowerMgmt.get": [],
+ "PowerMgmt.set": [
+  {
+   "name": "cpufreqgovernor",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "powerbtn",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "nothing",
+    "shutdown",
+    "standby"
+   ]
+  }
+ ],
+ "PowerMgmt.getScheduleList": [],
+ "PowerMgmt.getScheduledJob": [],
+ "PowerMgmt.setScheduledJob": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": true,
+   "enum": [
+    "reboot",
+    "shutdown",
+    "standby"
+   ]
+  },
+  {
+   "name": "execution",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "exactly",
+    "hourly",
+    "daily",
+    "weekly",
+    "monthly",
+    "yearly"
+   ]
+  },
+  {
+   "name": "minute",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everynminute",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hour",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everynhour",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "month",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofmonth",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everyndayofmonth",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofweek",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "PowerMgmt.deleteScheduledJob": [],
+ "PowerMgmt.executeScheduledJob": [],
+ "PowerMgmt.enumerateStandbyModes": [],
+ "Quota.get": [],
+ "Quota.set": [],
+ "Quota.getByTypeName": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "user",
+    "group"
+   ]
+  }
+ ],
+ "Quota.setByTypeName": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "user",
+    "group"
+   ]
+  },
+  {
+   "name": "bhardlimit",
+   "type": "number",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "bunit",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "B",
+    "KiB",
+    "MiB",
+    "GiB",
+    "TiB",
+    "PiB",
+    "EiB"
+   ]
+  }
+ ],
+ "Quota.delete": [],
+ "Rrd.generate": [],
+ "Rrd.getGraph": [
+  {
+   "name": "kind",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "period",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "hour",
+    "day",
+    "week",
+    "month",
+    "year"
+   ]
+  }
+ ],
+ "Rsync.getList": [],
+ "Rsync.get": [],
+ "Rsync.set": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sendemail",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "local",
+    "remote"
+   ]
+  },
+  {
+   "name": "srcsharedfolderref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "srcuri",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "destsharedfolderref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "desturi",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "minute",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everynminute",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hour",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everynhour",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "month",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofmonth",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "everyndayofmonth",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofweek",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionrecursive",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optiontimes",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optiongroup",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionowner",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optioncompress",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionarchive",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optiondelete",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionquiet",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionperms",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionacls",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionxattrs",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optiondryrun",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "optionpartial",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mode",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "push",
+    "pull"
+   ]
+  },
+  {
+   "name": "authentication",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "password",
+    "pubkey"
+   ]
+  },
+  {
+   "name": "password",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sshcertificateref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sshport",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Rsync.delete": [],
+ "Rsync.execute": [],
+ "Rsyncd.getSettings": [],
+ "Rsyncd.setSettings": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "port",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Rsyncd.getModuleList": [],
+ "Rsyncd.getModule": [],
+ "Rsyncd.setModule": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sharedfolderref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "uid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "readonly",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "writeonly",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "maxconnections",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "list",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hostsallow",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hostsdeny",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "authusers",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "usechroot",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "users",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Rsyncd.deleteModule": [],
+ "Services.getStatus": [],
+ "ShareMgmt.getCandidates": [],
+ "ShareMgmt.enumerateSharedFolders": [],
+ "ShareMgmt.getList": [],
+ "ShareMgmt.get": [],
+ "ShareMgmt.set": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "reldirpath",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mntentref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "mode",
+   "type": "string",
+   "required": false,
+   "enum": [
+    "700",
+    "750",
+    "755",
+    "770",
+    "775",
+    "777"
+   ]
+  }
+ ],
+ "ShareMgmt.delete": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "recursive",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.getPrivileges": [],
+ "ShareMgmt.setPrivileges": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "privileges",
+   "type": "array",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.getPrivilegesByRole": [
+  {
+   "name": "role",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "user",
+    "group"
+   ]
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.setPrivilegesByRole": [
+  {
+   "name": "role",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "user",
+    "group"
+   ]
+  },
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "privileges",
+   "type": "array",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.copyPrivileges": [
+  {
+   "name": "src",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dst",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.getFileACL": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "file",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.setFileACL": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "file",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "recursive",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "replace",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "owner",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "group",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "userperms",
+   "type": "integer",
+   "required": false,
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "name": "groupperms",
+   "type": "integer",
+   "required": false,
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "name": "otherperms",
+   "type": "integer",
+   "required": false,
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "name": "users",
+   "type": "array",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "groups",
+   "type": "array",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.getPath": [],
+ "ShareMgmt.enumerateSnapshots": [],
+ "ShareMgmt.enumerateAllSnapshots": [],
+ "ShareMgmt.createSnapshot": [],
+ "ShareMgmt.createScheduledSnapshotTask": [],
+ "ShareMgmt.enumerateScheduledSnapshotTasks": [],
+ "ShareMgmt.enumerateAllScheduledSnapshotTasks": [],
+ "ShareMgmt.deleteSnapshot": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "id",
+   "type": [
+    "string",
+    "integer"
+   ],
+   "required": true,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.restoreSnapshot": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "id",
+   "type": [
+    "string",
+    "integer"
+   ],
+   "required": true,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.fromSnapshot": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "id",
+   "type": [
+    "string",
+    "integer"
+   ],
+   "required": true,
+   "enum": []
+  }
+ ],
+ "ShareMgmt.getSnapshotLifecycle": [],
+ "ShareMgmt.setSnapshotLifecycle": [],
+ "Smart.enumerateDevices": [],
+ "Smart.enumerateMonitoredDevices": [],
+ "Smart.getList": [],
+ "Smart.getListBg": [],
+ "Smart.getSettings": [],
+ "Smart.setSettings": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "interval",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "powermode",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "never",
+    "sleep",
+    "standby",
+    "idle"
+   ]
+  },
+  {
+   "name": "tempdiff",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "tempmax",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Smart.getDeviceSettings": [],
+ "Smart.setDeviceSettings": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "devicefile",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Smart.getAttributes": [],
+ "Smart.getSelfTestLogs": [],
+ "Smart.getInformation": [],
+ "Smart.getExtendedInformation": [],
+ "Smart.getScheduleList": [],
+ "Smart.getScheduledTest": [],
+ "Smart.setScheduledTest": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "devicefile",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "type",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "S",
+    "L",
+    "C",
+    "O"
+   ]
+  },
+  {
+   "name": "hour",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "month",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofmonth",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "dayofweek",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "Smart.deleteScheduledTest": [],
+ "Smart.executeScheduledTest": [],
+ "SMB.getSettings": [],
+ "SMB.setSettings": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "workgroup",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "serverstring",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "loglevel",
+   "type": "integer",
+   "required": true,
+   "enum": [
+    0,
+    1,
+    2,
+    3,
+    10
+   ]
+  },
+  {
+   "name": "usesendfile",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "aio",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "timeserver",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "winssupport",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "winsserver",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "homesenable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "homesbrowseable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "SMB.getShareList": [],
+ "SMB.getShare": [],
+ "SMB.setShare": [
+  {
+   "name": "uuid",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sharedfolderref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "guest",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "no",
+    "allow",
+    "only"
+   ]
+  },
+  {
+   "name": "readonly",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "browseable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "recyclebin",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "recyclemaxsize",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "recyclemaxage",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hidedotfiles",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "inheritacls",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "inheritpermissions",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "easupport",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "storedosattributes",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hostsallow",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "hostsdeny",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "audit",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "timemachine",
+   "type": "boolean",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "SMB.deleteShare": [],
+ "SMB.emptyRecycleBin": [],
+ "SMB.getStats": [],
+ "SSH.get": [],
+ "SSH.set": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "port",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "passwordauthentication",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "pubkeyauthentication",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "permitrootlogin",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "tcpforwarding",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "compression",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "extraoptions",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "SSH.getStats": [],
+ "Syslog.getSettings": [],
+ "Syslog.setSettings": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "port",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "host",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "protocol",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "udp",
+    "tcp"
+   ]
+  }
+ ],
+ "System.noop": [],
+ "System.getTopInfo": [
+  {
+   "name": "format",
+   "type": "string",
+   "required": false,
+   "enum": [
+    "text",
+    "json"
+   ]
+  }
+ ],
+ "System.getShells": [],
+ "System.reboot": [
+  {
+   "name": "delay",
+   "type": "integer",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "System.shutdown": [
+  {
+   "name": "delay",
+   "type": "integer",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "System.standby": [
+  {
+   "name": "delay",
+   "type": "integer",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "System.suspend": [],
+ "System.hibernate": [],
+ "System.getTimeSettings": [],
+ "System.setTimeSettings": [
+  {
+   "name": "timezone",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ntpenable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ntptimeservers",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "ntpclients",
+   "type": "string",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "System.setDate": [
+  {
+   "name": "timestamp",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "System.getTimeZoneList": [],
+ "System.getInformation": [],
+ "System.getDiagnosticReport": [],
+ "System.getCpuStats": [],
+ "System.getCpuGovernors": [],
+ "UserMgmt.authUser": [
+  {
+   "name": "username",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "password",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.verifyChallenge": [
+  {
+   "name": "username",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "challengeresponse",
+   "type": "any",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "challengedata",
+   "type": "any",
+   "required": false,
+   "enum": []
+  }
+ ],
+ "UserMgmt.enumerateSystemUsers": [],
+ "UserMgmt.enumerateUsers": [],
+ "UserMgmt.enumerateAllUsers": [],
+ "UserMgmt.enumerateSystemGroups": [],
+ "UserMgmt.enumerateGroups": [],
+ "UserMgmt.enumerateAllGroups": [],
+ "UserMgmt.getUserList": [
+  {
+   "name": "start",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "limit",
+   "type": [
+    "integer",
+    "null"
+   ],
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sortfield",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "sortdir",
+   "type": [
+    "string",
+    "null"
+   ],
+   "required": false,
+   "enum": [
+    "asc",
+    "ASC",
+    "desc",
+    "DESC"
+   ]
+  },
+  {
+   "name": "search",
+   "type": [
+    "string",
+    "integer",
+    "null"
+   ],
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "detail",
+   "type": "string",
+   "required": false,
+   "enum": [
+    "basic",
+    "full"
+   ]
+  }
+ ],
+ "UserMgmt.getUser": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.getUserByContext": [],
+ "UserMgmt.setUser": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "uid",
+   "type": "integer",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "groups",
+   "type": "array",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "shell",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "password",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "email",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "disallowusermod",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sshpubkeys",
+   "type": "array",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.setUserByContext": [
+  {
+   "name": "password",
+   "type": "string",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "email",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.deleteUser": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.importUsers": [],
+ "UserMgmt.getGroupList": [],
+ "UserMgmt.getGroup": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.setGroup": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "gid",
+   "type": "integer",
+   "required": false,
+   "enum": []
+  },
+  {
+   "name": "comment",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "members",
+   "type": "array",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.deleteGroup": [
+  {
+   "name": "name",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.importGroups": [],
+ "UserMgmt.getSettings": [],
+ "UserMgmt.setSettings": [
+  {
+   "name": "enable",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sharedfolderref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "UserMgmt.setPasswordByContext": [
+  {
+   "name": "password",
+   "type": "string",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "WebGui.getSettings": [],
+ "WebGui.setSettings": [
+  {
+   "name": "port",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "enablessl",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sslport",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "forcesslonly",
+   "type": "boolean",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "sslcertificateref",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "timeout",
+   "type": "integer",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "WebGui.dismissWelcomeMessage": [],
+ "WebGui.getLocalStorageItems": [
+  {
+   "name": "devicetype",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "desktop",
+    "mobile"
+   ]
+  }
+ ],
+ "WebGui.setLocalStorageItem": [
+  {
+   "name": "devicetype",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "desktop",
+    "mobile"
+   ]
+  },
+  {
+   "name": "key",
+   "type": "string",
+   "required": true,
+   "enum": []
+  },
+  {
+   "name": "value",
+   "type": "any",
+   "required": true,
+   "enum": []
+  }
+ ],
+ "WebGui.clearLocalStorageItems": [
+  {
+   "name": "devicetype",
+   "type": "string",
+   "required": true,
+   "enum": [
+    "desktop",
+    "mobile"
+   ]
+  }
+ ],
+ "WebGui.getAutoLogoutSettings": []
+}

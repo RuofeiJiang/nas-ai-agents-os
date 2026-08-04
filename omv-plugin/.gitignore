@@ -1,0 +1,25 @@
+# Build artifacts
+**/node_modules/
+**/dist/
+**/.angular/
+
+# DEB build
+*.deb
+*.buildinfo
+*.changes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+
+# Temporary plans
+PLAN*.md
+
+# Secrets
+env
+.env
+*.env

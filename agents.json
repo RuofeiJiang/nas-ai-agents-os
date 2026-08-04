@@ -1,0 +1,905 @@
+[
+  {
+    "name": "system",
+    "description": "系统维护:磁盘 SMART 健康、系统信息、磁盘空间、实时状态检查、应用配置",
+    "actions": [
+      {
+        "name": "check_smart",
+        "description": "检查磁盘 SMART 健康状态(含温度)",
+        "params": []
+      },
+      {
+        "name": "system_info",
+        "description": "查看系统信息(CPU/内存/uptime/版本)",
+        "params": []
+      },
+      {
+        "name": "list_disks",
+        "description": "列出所有磁盘设备",
+        "params": []
+      },
+      {
+        "name": "list_filesystems",
+        "description": "列出所有文件系统",
+        "params": []
+      },
+      {
+        "name": "list_users",
+        "description": "列出所有用户",
+        "params": []
+      },
+      {
+        "name": "disk_usage",
+        "description": "查看磁盘/内存空间使用",
+        "params": []
+      },
+      {
+        "name": "check_state",
+        "description": "查实时状态(L3):CPU/内存/SMART/容器,Core 预检用",
+        "params": [
+          {
+            "name": "area",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "apply_config",
+        "description": "应用OMV配置变更(写操作后必须调)",
+        "params": []
+      },
+      {
+        "name": "clean_caches",
+        "description": "清理缓存(apt clean+autoremove+tmp+旧日志)",
+        "params": []
+      },
+      {
+        "name": "check_updates",
+        "description": "检查系统可升级包",
+        "params": []
+      },
+      {
+        "name": "network_info",
+        "description": "查网络接口信息",
+        "params": []
+      },
+      {
+        "name": "reboot_system",
+        "description": "重启系统(破坏性,需确认)",
+        "params": []
+      }
+    ]
+  },
+  {
+    "name": "docker",
+    "description": "容器管理:启停/日志/镜像管理/compose 编排/资源监控/容器内执行(podman)",
+    "actions": [
+      {
+        "name": "list_containers",
+        "description": "列出所有容器",
+        "params": []
+      },
+      {
+        "name": "start_container",
+        "description": "启动指定容器",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "stop_container",
+        "description": "停止指定容器",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "restart_container",
+        "description": "重启指定容器",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "container_logs",
+        "description": "查看容器日志",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "lines",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "container_stats",
+        "description": "查看容器资源使用(CPU/内存)",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "container_exec",
+        "description": "在容器内执行命令",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "command",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "pull_image",
+        "description": "拉取镜像",
+        "params": [
+          {
+            "name": "image",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "list_images",
+        "description": "列出本地镜像",
+        "params": []
+      },
+      {
+        "name": "prune_images",
+        "description": "清理无用镜像",
+        "params": []
+      },
+      {
+        "name": "health_check",
+        "description": "检查所有容器健康状态",
+        "params": []
+      },
+      {
+        "name": "compose_up",
+        "description": "podman compose up -d(启动编排)",
+        "params": [
+          {
+            "name": "file",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "compose_down",
+        "description": "podman compose down(停止编排)",
+        "params": [
+          {
+            "name": "file",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "compose_logs",
+        "description": "查看 compose 项目日志",
+        "params": [
+          {
+            "name": "file",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "lines",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "generate_compose",
+        "description": "生成 docker-compose.yml 模板",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "image",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "port",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "volume",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "network",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "env",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "output",
+            "type": "string",
+            "required": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "filesystem",
+    "description": "文件管理:共享/文件/搜索/分类/去重/标签/文件操作/共享创建删除",
+    "actions": [
+      {
+        "name": "list_shared_folders",
+        "description": "列出所有共享文件夹",
+        "params": []
+      },
+      {
+        "name": "list_files",
+        "description": "列出目录下的文件",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "file_info",
+        "description": "查看文件详细信息(stat)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "search_files",
+        "description": "搜索文件(find -name)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "pattern",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "dir_size",
+        "description": "查看目录大小(du -sh)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "classify_files",
+        "description": "按扩展名自动分类(图片/视频/音频/文档/压缩包)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "dedup",
+        "description": "按内容去重(md5 找重复文件)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "tag_file",
+        "description": "给文件打标签",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tag",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "search_by_tag",
+        "description": "按标签搜索文件",
+        "params": [
+          {
+            "name": "tag",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "list_tags",
+        "description": "列出所有标签及统计",
+        "params": []
+      },
+      {
+        "name": "delete_tag",
+        "description": "删除文件的指定标签",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tag",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "auto_tag_directory",
+        "description": "自动标签目录(按文件类型批量打标)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "move_file",
+        "description": "移动文件",
+        "params": [
+          {
+            "name": "src",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "dest",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "copy_file",
+        "description": "复制文件",
+        "params": [
+          {
+            "name": "src",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "dest",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "create_directory",
+        "description": "创建目录",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "file_permissions",
+        "description": "查看文件权限",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "create_share",
+        "description": "创建共享文件夹(自动查挂载点+哨兵UUID)",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "create_smb_share",
+        "description": "创建SMB共享(自动查共享UUID+哨兵UUID)",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "delete_share",
+        "description": "删除共享文件夹(破坏性)",
+        "params": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "backup",
+    "description": "备份管理:rsync 增量备份/恢复/校验/定时备份/状态查询",
+    "actions": [
+      {
+        "name": "backup",
+        "description": "增量备份(rsync --delete)",
+        "params": [
+          {
+            "name": "src",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "dest",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "restore",
+        "description": "从备份恢复",
+        "params": [
+          {
+            "name": "src",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "dest",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "verify",
+        "description": "校验备份一致性(dry-run 比对)",
+        "params": [
+          {
+            "name": "src",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "dest",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "list_backups",
+        "description": "列出备份目录内容",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "backup_status",
+        "description": "查看备份状态(上次备份/磁盘空间)",
+        "params": [
+          {
+            "name": "dest",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "schedule_backup",
+        "description": "创建定时备份(crontab)",
+        "params": [
+          {
+            "name": "src",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "dest",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "schedule",
+            "type": "string",
+            "required": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "vision",
+    "description": "相册管理:照片扫描/视觉打标签/批量打标签/搜索/智能相册/统计(vision 模型)",
+    "actions": [
+      {
+        "name": "scan_photos",
+        "description": "扫描目录下的照片文件",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "tag_photo",
+        "description": "给单张照片打标签(调 vision 模型)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "tag_all_photos",
+        "description": "批量打标签(扫描+逐张打标+存标签库)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "search_photos",
+        "description": "按标签搜索照片",
+        "params": [
+          {
+            "name": "query",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "build_album",
+        "description": "按主题生成智能相册(从标签库筛选)",
+        "params": [
+          {
+            "name": "theme",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "photo_stats",
+        "description": "照片标签统计(总数/标签排名)",
+        "params": []
+      }
+    ]
+  },
+  {
+    "name": "media",
+    "description": "影音管理:元数据刮削(TMDB)/字幕匹配/格式转换(ffmpeg)/媒体库扫描",
+    "actions": [
+      {
+        "name": "scrape_metadata",
+        "description": "刮削元数据(优先TMDB,回退文件名解析)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "find_subtitle",
+        "description": "匹配字幕(需配置字幕服务)",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "transcode",
+        "description": "格式转换(ffmpeg)",
+        "params": [
+          {
+            "name": "input",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "output",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "media_library_scan",
+        "description": "扫描媒体库目录,解析所有文件元数据",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "download",
+    "description": "下载管理:BT/PT 下载/暂停恢复/移动入库(qBittorrent API)",
+    "actions": [
+      {
+        "name": "add_torrent",
+        "description": "添加磁力链接下载",
+        "params": [
+          {
+            "name": "magnet",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "list_downloads",
+        "description": "列出下载任务",
+        "params": []
+      },
+      {
+        "name": "pause_torrent",
+        "description": "暂停下载",
+        "params": [
+          {
+            "name": "hash",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "resume_torrent",
+        "description": "恢复下载",
+        "params": [
+          {
+            "name": "hash",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "move_to_library",
+        "description": "移动下载文件到媒体库",
+        "params": [
+          {
+            "name": "src",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "dest",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "homeassistant",
+    "description": "智能家居控制:设备列表/状态查询/服务调用/自动化/事件触发(HA REST API)",
+    "actions": [
+      {
+        "name": "list_entities",
+        "description": "列出所有 HA 设备及其状态",
+        "params": []
+      },
+      {
+        "name": "get_state",
+        "description": "查指定设备状态",
+        "params": [
+          {
+            "name": "entity_id",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "call_service",
+        "description": "调用 HA 服务控制设备(如 light.turn_on)",
+        "params": [
+          {
+            "name": "domain",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "service",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "payload",
+            "type": "object",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "list_services",
+        "description": "列出所有可用 HA 服务",
+        "params": []
+      },
+      {
+        "name": "list_automations",
+        "description": "列出 HA 自动化规则",
+        "params": []
+      },
+      {
+        "name": "fire_event",
+        "description": "触发 HA 自定义事件",
+        "params": [
+          {
+            "name": "event_type",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "payload",
+            "type": "object",
+            "required": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "cloud",
+    "description": "云存储管理:百度网盘/阿里云盘/天翼云盘(经 Alist REST API),列文件/下载/上传",
+    "actions": [
+      {
+        "name": "list_cloud",
+        "description": "列网盘文件",
+        "params": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "download_from_cloud",
+        "description": "从网盘下载到NAS",
+        "params": [
+          {
+            "name": "remote_path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "local_path",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "upload_to_cloud",
+        "description": "从NAS上传到网盘",
+        "params": [
+          {
+            "name": "local_path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "remote_path",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "cloud_info",
+        "description": "查看已配置的云存储列表",
+        "params": []
+      }
+    ]
+  }
+]

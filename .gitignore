@@ -1,0 +1,47 @@
+# Build artifacts
+/target/
+**/target/
+
+# Node modules (workbench)
+**/node_modules/
+**/dist/
+**/.angular/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets - 绝对不能上传
+env
+.env
+*.env
+/etc/aaos/env
+
+# DEB build artifacts
+*.deb
+*.buildinfo
+*.changes
+
+# Logs
+*.log
+
+# Runtime data
+/var/lib/aaos/
+/var/log/aaos/
+
+# QEMU/VM specific
+*.qcow2
+omv-plugin/debian/.debhelper/
+omv-plugin/openmediavault-aaos/debian/files
+omv-plugin/openmediavault-aaos/debian/source/
+omv-plugin/debian/.debhelper
+omv-plugin/openmediavault-aaos/debian/openmediavault-aaos.substvars
+omv-plugin/*.deb
+omv-plugin/*.buildinfo
+omv-plugin/*.changes

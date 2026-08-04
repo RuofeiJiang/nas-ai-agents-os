@@ -1,0 +1,28 @@
+@use 'scss/defaults/colors' as dc;
+
+:host {
+  .topbar {
+    background-color: dc.$omv-color-white-translucent;
+    backdrop-filter: blur(4px);
+
+    .logo {
+      content: url('^./assets/images/openmediavault_logo.svg');
+      width: auto;
+      height: auto;
+    }
+  }
+
+  .icon,
+  .icon-background {
+    width: 4rem;
+    height: 4rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .icon-background {
+    width: 5rem;
+    height: 5rem;
+  }
+}

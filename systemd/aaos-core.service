@@ -1,0 +1,37 @@
+[Unit]
+Description=AAOS Core Agent - AI Runtime for NAS
+Documentation=man:aaos-core(8)
+After=network.target local-fs.target
+Requires=aaos-sentinel.service
+After=aaos-sentinel.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/aaos-core --socket /run/aaos/core.sock --sentinel-socket /run/aaos/sentinel.sock
+Restart=on-failure
+RestartSec=5
+RuntimeDirectory=aaos
+RuntimeDirectoryMode=0750
+LogsDirectory=aaos
+LogsDirectoryMode=0750
+
+# 安全加固
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+# Root 是真的需要执行 ZFS 命令，不降权
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

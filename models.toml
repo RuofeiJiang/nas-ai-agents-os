@@ -1,0 +1,58 @@
+# AAOS 模型库(借鉴 cc-switch provider 配置结构)
+# 部署:/etc/aaos/models.toml
+# 模型留空可 `aaos-cli --discover-models <provider>` 自动发现后抄进来
+
+current = "coding-plan"
+
+# ---- 火山方舟 ark coding plan(OpenAI 兼容)----
+[[providers]]
+id = "coding-plan"
+name = "火山方舟 Coding Plan"
+category = "aggregator"
+provider_type = "openai"
+base_url = "https://ark.cn-beijing.volces.com/api/coding/v3"   # OpenAI 兼容协议
+api_key_env = "ARK_API_KEY"
+in_failover_queue = false
+
+  [[providers.models]]
+  id = "deepseek-v4-pro-260425"
+  capabilities = ["text"]
+  tags = ["strong"]
+
+  [[providers.models]]
+  id = "doubao-1.5-vision-pro-250328"   # 视觉模型(后期照片打标签)
+  capabilities = ["text", "vision"]
+  tags = ["strong"]
+
+# ---- 本地 Ollama(隐私;视觉模型后期走这)----
+[[providers]]
+id = "local-ollama"
+name = "本地 Ollama"
+category = "custom"
+provider_type = "openai"
+base_url = "http://localhost:11434/v1"
+api_key_env = ""
+in_failover_queue = true
+
+  [[providers.models]]
+  id = "qwen2.5:7b"
+  capabilities = ["text"]
+  tags = ["local", "fast"]
+
+# ---- Core Agent 调度 ----
+[core]
+provider = "coding-plan"
+model = "deepseek-v4-pro-260425"           # ← 同上
+fallback_provider = "local-ollama"
+fallback_model = "qwen2.5:7b"
+
+# ---- Execution Agents ----
+[[execution_agent]]
+type = "text-gen"
+provider = "coding-plan"
+model = "deepseek-v4-pro-260425"
+
+# ---- Sentinel(MVP 纯规则,无 LLM)----
+[sentinel]
+provider = ""
+model = ""

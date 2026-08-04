@@ -1,0 +1,6 @@
+version: "1.0"
+type: component
+data:
+  name: omv-services-aaos-chat-page
+  type: aaosChatPage
+  config: {}

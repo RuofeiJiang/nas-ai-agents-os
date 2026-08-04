@@ -1,0 +1,16 @@
+Source: openmediavault-aaos
+Section: net
+XB-Plugin-Section: system
+Priority: optional
+Maintainer: AAOS Project <aaos@local>
+Build-Depends: debhelper (>= 13)
+Standards-Version: 4.7.2
+Homepage: https://github.com/openmediavault/openmediavault
+
+Package: openmediavault-aaos
+Architecture: all
+Depends: openmediavault (>= 8.3)
+Description: openmediavault AAOS plugin
+ Bridges OMV JSON-RPC to AAOS Core (AI Agents Operating System).
+ Exposes 'AAOS' RPC service with query/status methods that proxy to
+ /run/aaos/core.sock. Natural-language NAS management via OMV.

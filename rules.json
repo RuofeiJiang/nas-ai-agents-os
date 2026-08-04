@@ -1,0 +1,1900 @@
+{
+  "version": "OMV 8.5.5-1 core",
+  "counts": {
+    "read": 142,
+    "write": 99,
+    "destructive": 24
+  },
+  "service_count": 31,
+  "method_count": 265,
+  "services": {
+    "apt": "Apt",
+    "certificatemgmt": "CertificateMgmt",
+    "config": "Config",
+    "cron": "Cron",
+    "diskmgmt": "DiskMgmt",
+    "envvars": "EnvVars",
+    "exec": "Exec",
+    "filesystemmgmt": "FileSystemMgmt",
+    "folderbrowser": "FolderBrowser",
+    "fstab": "FsTab",
+    "iptables": "Iptables",
+    "logfile": "LogFile",
+    "network": "Network",
+    "nfs": "NFS",
+    "notification": "Notification",
+    "perfstats": "PerfStats",
+    "pluginmgmt": "Plugin",
+    "powermgmt": "PowerMgmt",
+    "quota": "Quota",
+    "rrd": "Rrd",
+    "rsync": "Rsync",
+    "rsyncd": "Rsyncd",
+    "services": "Services",
+    "sharemgmt": "ShareMgmt",
+    "smart": "Smart",
+    "smb": "SMB",
+    "ssh": "SSH",
+    "syslog": "Syslog",
+    "system": "System",
+    "usermgmt": "UserMgmt",
+    "webgui": "WebGui"
+  },
+  "rules": {
+    "Apt.getSoftwareSettings": "read",
+    "Apt.setSoftwareSettings": "write",
+    "Apt.getUpdatesSettings": "read",
+    "Apt.setUpdatesSettings": "write",
+    "Apt.enumerateUpgraded": "read",
+    "Apt.getUpgradedList": "read",
+    "Apt.install": "write",
+    "Apt.upgrade": "write",
+    "Apt.update": "write",
+    "Apt.upload": "write",
+    "Apt.getChangeLog": "read",
+    "CertificateMgmt.getList": "read",
+    "CertificateMgmt.get": "read",
+    "CertificateMgmt.set": "write",
+    "CertificateMgmt.delete": "destructive",
+    "CertificateMgmt.getDetail": "read",
+    "CertificateMgmt.create": "write",
+    "CertificateMgmt.getSshList": "read",
+    "CertificateMgmt.createSsh": "write",
+    "CertificateMgmt.getSsh": "read",
+    "CertificateMgmt.setSsh": "write",
+    "CertificateMgmt.deleteSsh": "destructive",
+    "CertificateMgmt.copySshId": "write",
+    "Config.isDirty": "read",
+    "Config.applyChanges": "write",
+    "Config.applyChangesBg": "write",
+    "Config.revertChanges": "write",
+    "Config.revertChangesBg": "write",
+    "Config.getlist": "read",
+    "Config.get": "read",
+    "Config.set": "write",
+    "Config.delete": "destructive",
+    "Cron.getList": "read",
+    "Cron.get": "read",
+    "Cron.set": "write",
+    "Cron.delete": "destructive",
+    "Cron.execute": "write",
+    "DiskMgmt.enumerateDevices": "read",
+    "DiskMgmt.getList": "read",
+    "DiskMgmt.getListBg": "read",
+    "DiskMgmt.getHdParm": "read",
+    "DiskMgmt.setHdParm": "write",
+    "DiskMgmt.wipe": "destructive",
+    "DiskMgmt.rescan": "read",
+    "EnvVars.enumerate": "read",
+    "EnvVars.getList": "read",
+    "EnvVars.get": "read",
+    "EnvVars.set": "write",
+    "EnvVars.delete": "destructive",
+    "EnvVars.apply": "write",
+    "EnvVars.applyBg": "write",
+    "Exec.stop": "write",
+    "Exec.getOutput": "read",
+    "Exec.isRunning": "read",
+    "Exec.enumerate": "read",
+    "Exec.attach": "write",
+    "FileSystemMgmt.enumerateFilesystems": "read",
+    "FileSystemMgmt.enumerateMountedFilesystems": "read",
+    "FileSystemMgmt.getList": "read",
+    "FileSystemMgmt.getListBg": "read",
+    "FileSystemMgmt.getCandidates": "read",
+    "FileSystemMgmt.getCandidatesBg": "read",
+    "FileSystemMgmt.getMountCandidates": "read",
+    "FileSystemMgmt.create": "write",
+    "FileSystemMgmt.createBtrfs": "write",
+    "FileSystemMgmt.grow": "write",
+    "FileSystemMgmt.setMountPoint": "write",
+    "FileSystemMgmt.umountByFsName": "destructive",
+    "FileSystemMgmt.umountByDir": "destructive",
+    "FileSystemMgmt.hasFilesystem": "read",
+    "FileSystemMgmt.getDetails": "read",
+    "FolderBrowser.get": "read",
+    "FsTab.enumerateEntries": "read",
+    "FsTab.get": "read",
+    "FsTab.set": "write",
+    "FsTab.delete": "destructive",
+    "FsTab.getByFsName": "read",
+    "FsTab.getByDir": "read",
+    "Iptables.getRules": "read",
+    "Iptables.setRules": "write",
+    "Iptables.getRules6": "read",
+    "Iptables.setRules6": "write",
+    "Iptables.getRule": "read",
+    "Iptables.setRule": "write",
+    "Iptables.deleteRule": "destructive",
+    "LogFile.getList": "read",
+    "LogFile.clear": "write",
+    "LogFile.getContent": "read",
+    "Network.getGeneralSettings": "read",
+    "Network.setGeneralSettings": "write",
+    "Network.enumerateDevices": "read",
+    "Network.enumerateDevicesList": "read",
+    "Network.enumerateConfiguredDevices": "read",
+    "Network.identify": "write",
+    "Network.getInformation": "read",
+    "Network.getInterfaceList": "read",
+    "Network.getInterface": "read",
+    "Network.deleteInterface": "destructive",
+    "Network.getEthernetCandidates": "read",
+    "Network.getEthernetIface": "read",
+    "Network.setEthernetIface": "write",
+    "Network.enumerateBondSlaves": "read",
+    "Network.getBondIface": "read",
+    "Network.setBondIface": "write",
+    "Network.getVlanCandidates": "read",
+    "Network.getVlanIface": "read",
+    "Network.setVlanIface": "write",
+    "Network.getWirelessCandidates": "read",
+    "Network.getWirelessIface": "read",
+    "Network.setWirelessIface": "write",
+    "Network.enumerateBridgeSlaves": "read",
+    "Network.getBridgeIface": "read",
+    "Network.setBridgeIface": "write",
+    "Network.getProxy": "read",
+    "Network.setProxy": "write",
+    "NFS.getSettings": "read",
+    "NFS.setSettings": "write",
+    "NFS.getShareList": "read",
+    "NFS.getShare": "read",
+    "NFS.setShare": "write",
+    "NFS.deleteShare": "destructive",
+    "NFS.getStats": "read",
+    "Notification.getList": "read",
+    "Notification.setList": "write",
+    "Notification.get": "read",
+    "Notification.set": "write",
+    "Notification.isEnabled": "read",
+    "Notification.sendTestEmail": "write",
+    "PerfStats.get": "read",
+    "PerfStats.set": "write",
+    "Plugin.enumeratePlugins": "read",
+    "Plugin.getList": "read",
+    "Plugin.remove": "destructive",
+    "Plugin.upload": "write",
+    "Plugin.install": "write",
+    "PowerMgmt.get": "read",
+    "PowerMgmt.set": "write",
+    "PowerMgmt.getScheduleList": "read",
+    "PowerMgmt.getScheduledJob": "read",
+    "PowerMgmt.setScheduledJob": "write",
+    "PowerMgmt.deleteScheduledJob": "destructive",
+    "PowerMgmt.executeScheduledJob": "write",
+    "PowerMgmt.enumerateStandbyModes": "read",
+    "Quota.get": "read",
+    "Quota.set": "write",
+    "Quota.getByTypeName": "read",
+    "Quota.setByTypeName": "write",
+    "Quota.delete": "destructive",
+    "Rrd.generate": "write",
+    "Rrd.getGraph": "read",
+    "Rsync.getList": "read",
+    "Rsync.get": "read",
+    "Rsync.set": "write",
+    "Rsync.delete": "destructive",
+    "Rsync.execute": "write",
+    "Rsyncd.getSettings": "read",
+    "Rsyncd.setSettings": "write",
+    "Rsyncd.getModuleList": "read",
+    "Rsyncd.getModule": "read",
+    "Rsyncd.setModule": "write",
+    "Rsyncd.deleteModule": "destructive",
+    "Services.getStatus": "read",
+    "ShareMgmt.getCandidates": "read",
+    "ShareMgmt.enumerateSharedFolders": "read",
+    "ShareMgmt.getList": "read",
+    "ShareMgmt.get": "read",
+    "ShareMgmt.set": "write",
+    "ShareMgmt.delete": "destructive",
+    "ShareMgmt.getPrivileges": "read",
+    "ShareMgmt.setPrivileges": "write",
+    "ShareMgmt.getPrivilegesByRole": "read",
+    "ShareMgmt.setPrivilegesByRole": "write",
+    "ShareMgmt.copyPrivileges": "write",
+    "ShareMgmt.getFileACL": "read",
+    "ShareMgmt.setFileACL": "write",
+    "ShareMgmt.getPath": "read",
+    "ShareMgmt.enumerateSnapshots": "read",
+    "ShareMgmt.enumerateAllSnapshots": "read",
+    "ShareMgmt.createSnapshot": "write",
+    "ShareMgmt.createScheduledSnapshotTask": "write",
+    "ShareMgmt.enumerateScheduledSnapshotTasks": "read",
+    "ShareMgmt.enumerateAllScheduledSnapshotTasks": "read",
+    "ShareMgmt.deleteSnapshot": "destructive",
+    "ShareMgmt.restoreSnapshot": "write",
+    "ShareMgmt.fromSnapshot": "write",
+    "ShareMgmt.getSnapshotLifecycle": "read",
+    "ShareMgmt.setSnapshotLifecycle": "write",
+    "Smart.enumerateDevices": "read",
+    "Smart.enumerateMonitoredDevices": "read",
+    "Smart.getList": "read",
+    "Smart.getListBg": "read",
+    "Smart.getSettings": "read",
+    "Smart.setSettings": "write",
+    "Smart.getDeviceSettings": "read",
+    "Smart.setDeviceSettings": "write",
+    "Smart.getAttributes": "read",
+    "Smart.getSelfTestLogs": "read",
+    "Smart.getInformation": "read",
+    "Smart.getExtendedInformation": "read",
+    "Smart.getScheduleList": "read",
+    "Smart.getScheduledTest": "read",
+    "Smart.setScheduledTest": "write",
+    "Smart.deleteScheduledTest": "destructive",
+    "Smart.executeScheduledTest": "write",
+    "SMB.getSettings": "read",
+    "SMB.setSettings": "write",
+    "SMB.getShareList": "read",
+    "SMB.getShare": "read",
+    "SMB.setShare": "write",
+    "SMB.deleteShare": "destructive",
+    "SMB.emptyRecycleBin": "destructive",
+    "SMB.getStats": "read",
+    "SSH.get": "read",
+    "SSH.set": "write",
+    "SSH.getStats": "read",
+    "Syslog.getSettings": "read",
+    "Syslog.setSettings": "write",
+    "System.noop": "write",
+    "System.getTopInfo": "read",
+    "System.getShells": "read",
+    "System.reboot": "write",
+    "System.shutdown": "write",
+    "System.standby": "write",
+    "System.suspend": "write",
+    "System.hibernate": "write",
+    "System.getTimeSettings": "read",
+    "System.setTimeSettings": "write",
+    "System.setDate": "write",
+    "System.getTimeZoneList": "read",
+    "System.getInformation": "read",
+    "System.getDiagnosticReport": "read",
+    "System.getCpuStats": "read",
+    "System.getCpuGovernors": "read",
+    "UserMgmt.authUser": "write",
+    "UserMgmt.verifyChallenge": "write",
+    "UserMgmt.enumerateSystemUsers": "read",
+    "UserMgmt.enumerateUsers": "read",
+    "UserMgmt.enumerateAllUsers": "read",
+    "UserMgmt.enumerateSystemGroups": "read",
+    "UserMgmt.enumerateGroups": "read",
+    "UserMgmt.enumerateAllGroups": "read",
+    "UserMgmt.getUserList": "read",
+    "UserMgmt.getUser": "read",
+    "UserMgmt.getUserByContext": "read",
+    "UserMgmt.setUser": "write",
+    "UserMgmt.setUserByContext": "write",
+    "UserMgmt.deleteUser": "destructive",
+    "UserMgmt.importUsers": "write",
+    "UserMgmt.getGroupList": "read",
+    "UserMgmt.getGroup": "read",
+    "UserMgmt.setGroup": "write",
+    "UserMgmt.deleteGroup": "destructive",
+    "UserMgmt.importGroups": "write",
+    "UserMgmt.getSettings": "read",
+    "UserMgmt.setSettings": "write",
+    "UserMgmt.setPasswordByContext": "write",
+    "WebGui.getSettings": "read",
+    "WebGui.setSettings": "write",
+    "WebGui.dismissWelcomeMessage": "write",
+    "WebGui.getLocalStorageItems": "read",
+    "WebGui.setLocalStorageItem": "write",
+    "WebGui.clearLocalStorageItems": "write",
+    "WebGui.getAutoLogoutSettings": "read"
+  },
+  "entries": [
+    {
+      "service": "Apt",
+      "method": "getSoftwareSettings",
+      "class": "read",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "setSoftwareSettings",
+      "class": "write",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "getUpdatesSettings",
+      "class": "read",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "setUpdatesSettings",
+      "class": "write",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "enumerateUpgraded",
+      "class": "read",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "getUpgradedList",
+      "class": "read",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "install",
+      "class": "write",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "upgrade",
+      "class": "write",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "update",
+      "class": "write",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "upload",
+      "class": "write",
+      "file": "apt"
+    },
+    {
+      "service": "Apt",
+      "method": "getChangeLog",
+      "class": "read",
+      "file": "apt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "getList",
+      "class": "read",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "get",
+      "class": "read",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "set",
+      "class": "write",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "delete",
+      "class": "destructive",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "getDetail",
+      "class": "read",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "create",
+      "class": "write",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "getSshList",
+      "class": "read",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "createSsh",
+      "class": "write",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "getSsh",
+      "class": "read",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "setSsh",
+      "class": "write",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "deleteSsh",
+      "class": "destructive",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "CertificateMgmt",
+      "method": "copySshId",
+      "class": "write",
+      "file": "certificatemgmt"
+    },
+    {
+      "service": "Config",
+      "method": "isDirty",
+      "class": "read",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "applyChanges",
+      "class": "write",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "applyChangesBg",
+      "class": "write",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "revertChanges",
+      "class": "write",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "revertChangesBg",
+      "class": "write",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "getlist",
+      "class": "read",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "get",
+      "class": "read",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "set",
+      "class": "write",
+      "file": "config"
+    },
+    {
+      "service": "Config",
+      "method": "delete",
+      "class": "destructive",
+      "file": "config"
+    },
+    {
+      "service": "Cron",
+      "method": "getList",
+      "class": "read",
+      "file": "cron"
+    },
+    {
+      "service": "Cron",
+      "method": "get",
+      "class": "read",
+      "file": "cron"
+    },
+    {
+      "service": "Cron",
+      "method": "set",
+      "class": "write",
+      "file": "cron"
+    },
+    {
+      "service": "Cron",
+      "method": "delete",
+      "class": "destructive",
+      "file": "cron"
+    },
+    {
+      "service": "Cron",
+      "method": "execute",
+      "class": "write",
+      "file": "cron"
+    },
+    {
+      "service": "DiskMgmt",
+      "method": "enumerateDevices",
+      "class": "read",
+      "file": "diskmgmt"
+    },
+    {
+      "service": "DiskMgmt",
+      "method": "getList",
+      "class": "read",
+      "file": "diskmgmt"
+    },
+    {
+      "service": "DiskMgmt",
+      "method": "getListBg",
+      "class": "read",
+      "file": "diskmgmt"
+    },
+    {
+      "service": "DiskMgmt",
+      "method": "getHdParm",
+      "class": "read",
+      "file": "diskmgmt"
+    },
+    {
+      "service": "DiskMgmt",
+      "method": "setHdParm",
+      "class": "write",
+      "file": "diskmgmt"
+    },
+    {
+      "service": "DiskMgmt",
+      "method": "wipe",
+      "class": "destructive",
+      "file": "diskmgmt"
+    },
+    {
+      "service": "DiskMgmt",
+      "method": "rescan",
+      "class": "read",
+      "file": "diskmgmt"
+    },
+    {
+      "service": "EnvVars",
+      "method": "enumerate",
+      "class": "read",
+      "file": "envvars"
+    },
+    {
+      "service": "EnvVars",
+      "method": "getList",
+      "class": "read",
+      "file": "envvars"
+    },
+    {
+      "service": "EnvVars",
+      "method": "get",
+      "class": "read",
+      "file": "envvars"
+    },
+    {
+      "service": "EnvVars",
+      "method": "set",
+      "class": "write",
+      "file": "envvars"
+    },
+    {
+      "service": "EnvVars",
+      "method": "delete",
+      "class": "destructive",
+      "file": "envvars"
+    },
+    {
+      "service": "EnvVars",
+      "method": "apply",
+      "class": "write",
+      "file": "envvars"
+    },
+    {
+      "service": "EnvVars",
+      "method": "applyBg",
+      "class": "write",
+      "file": "envvars"
+    },
+    {
+      "service": "Exec",
+      "method": "stop",
+      "class": "write",
+      "file": "exec"
+    },
+    {
+      "service": "Exec",
+      "method": "getOutput",
+      "class": "read",
+      "file": "exec"
+    },
+    {
+      "service": "Exec",
+      "method": "isRunning",
+      "class": "read",
+      "file": "exec"
+    },
+    {
+      "service": "Exec",
+      "method": "enumerate",
+      "class": "read",
+      "file": "exec"
+    },
+    {
+      "service": "Exec",
+      "method": "attach",
+      "class": "write",
+      "file": "exec"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "enumerateFilesystems",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "enumerateMountedFilesystems",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "getList",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "getListBg",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "getCandidates",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "getCandidatesBg",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "getMountCandidates",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "create",
+      "class": "write",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "createBtrfs",
+      "class": "write",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "grow",
+      "class": "write",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "setMountPoint",
+      "class": "write",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "umountByFsName",
+      "class": "destructive",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "umountByDir",
+      "class": "destructive",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "hasFilesystem",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FileSystemMgmt",
+      "method": "getDetails",
+      "class": "read",
+      "file": "filesystemmgmt"
+    },
+    {
+      "service": "FolderBrowser",
+      "method": "get",
+      "class": "read",
+      "file": "folderbrowser"
+    },
+    {
+      "service": "FsTab",
+      "method": "enumerateEntries",
+      "class": "read",
+      "file": "fstab"
+    },
+    {
+      "service": "FsTab",
+      "method": "get",
+      "class": "read",
+      "file": "fstab"
+    },
+    {
+      "service": "FsTab",
+      "method": "set",
+      "class": "write",
+      "file": "fstab"
+    },
+    {
+      "service": "FsTab",
+      "method": "delete",
+      "class": "destructive",
+      "file": "fstab"
+    },
+    {
+      "service": "FsTab",
+      "method": "getByFsName",
+      "class": "read",
+      "file": "fstab"
+    },
+    {
+      "service": "FsTab",
+      "method": "getByDir",
+      "class": "read",
+      "file": "fstab"
+    },
+    {
+      "service": "Iptables",
+      "method": "getRules",
+      "class": "read",
+      "file": "iptables"
+    },
+    {
+      "service": "Iptables",
+      "method": "setRules",
+      "class": "write",
+      "file": "iptables"
+    },
+    {
+      "service": "Iptables",
+      "method": "getRules6",
+      "class": "read",
+      "file": "iptables"
+    },
+    {
+      "service": "Iptables",
+      "method": "setRules6",
+      "class": "write",
+      "file": "iptables"
+    },
+    {
+      "service": "Iptables",
+      "method": "getRule",
+      "class": "read",
+      "file": "iptables"
+    },
+    {
+      "service": "Iptables",
+      "method": "setRule",
+      "class": "write",
+      "file": "iptables"
+    },
+    {
+      "service": "Iptables",
+      "method": "deleteRule",
+      "class": "destructive",
+      "file": "iptables"
+    },
+    {
+      "service": "LogFile",
+      "method": "getList",
+      "class": "read",
+      "file": "logfile"
+    },
+    {
+      "service": "LogFile",
+      "method": "clear",
+      "class": "write",
+      "file": "logfile"
+    },
+    {
+      "service": "LogFile",
+      "method": "getContent",
+      "class": "read",
+      "file": "logfile"
+    },
+    {
+      "service": "Network",
+      "method": "getGeneralSettings",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "setGeneralSettings",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "enumerateDevices",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "enumerateDevicesList",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "enumerateConfiguredDevices",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "identify",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getInformation",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getInterfaceList",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getInterface",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "deleteInterface",
+      "class": "destructive",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getEthernetCandidates",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getEthernetIface",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "setEthernetIface",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "enumerateBondSlaves",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getBondIface",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "setBondIface",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getVlanCandidates",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getVlanIface",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "setVlanIface",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getWirelessCandidates",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getWirelessIface",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "setWirelessIface",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "enumerateBridgeSlaves",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getBridgeIface",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "setBridgeIface",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "getProxy",
+      "class": "read",
+      "file": "network"
+    },
+    {
+      "service": "Network",
+      "method": "setProxy",
+      "class": "write",
+      "file": "network"
+    },
+    {
+      "service": "NFS",
+      "method": "getSettings",
+      "class": "read",
+      "file": "nfs"
+    },
+    {
+      "service": "NFS",
+      "method": "setSettings",
+      "class": "write",
+      "file": "nfs"
+    },
+    {
+      "service": "NFS",
+      "method": "getShareList",
+      "class": "read",
+      "file": "nfs"
+    },
+    {
+      "service": "NFS",
+      "method": "getShare",
+      "class": "read",
+      "file": "nfs"
+    },
+    {
+      "service": "NFS",
+      "method": "setShare",
+      "class": "write",
+      "file": "nfs"
+    },
+    {
+      "service": "NFS",
+      "method": "deleteShare",
+      "class": "destructive",
+      "file": "nfs"
+    },
+    {
+      "service": "NFS",
+      "method": "getStats",
+      "class": "read",
+      "file": "nfs"
+    },
+    {
+      "service": "Notification",
+      "method": "getList",
+      "class": "read",
+      "file": "notification"
+    },
+    {
+      "service": "Notification",
+      "method": "setList",
+      "class": "write",
+      "file": "notification"
+    },
+    {
+      "service": "Notification",
+      "method": "get",
+      "class": "read",
+      "file": "notification"
+    },
+    {
+      "service": "Notification",
+      "method": "set",
+      "class": "write",
+      "file": "notification"
+    },
+    {
+      "service": "Notification",
+      "method": "isEnabled",
+      "class": "read",
+      "file": "notification"
+    },
+    {
+      "service": "Notification",
+      "method": "get",
+      "class": "read",
+      "file": "notification"
+    },
+    {
+      "service": "Notification",
+      "method": "set",
+      "class": "write",
+      "file": "notification"
+    },
+    {
+      "service": "Notification",
+      "method": "sendTestEmail",
+      "class": "write",
+      "file": "notification"
+    },
+    {
+      "service": "PerfStats",
+      "method": "get",
+      "class": "read",
+      "file": "perfstats"
+    },
+    {
+      "service": "PerfStats",
+      "method": "set",
+      "class": "write",
+      "file": "perfstats"
+    },
+    {
+      "service": "Plugin",
+      "method": "enumeratePlugins",
+      "class": "read",
+      "file": "pluginmgmt"
+    },
+    {
+      "service": "Plugin",
+      "method": "getList",
+      "class": "read",
+      "file": "pluginmgmt"
+    },
+    {
+      "service": "Plugin",
+      "method": "remove",
+      "class": "destructive",
+      "file": "pluginmgmt"
+    },
+    {
+      "service": "Plugin",
+      "method": "upload",
+      "class": "write",
+      "file": "pluginmgmt"
+    },
+    {
+      "service": "Plugin",
+      "method": "install",
+      "class": "write",
+      "file": "pluginmgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "get",
+      "class": "read",
+      "file": "powermgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "set",
+      "class": "write",
+      "file": "powermgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "getScheduleList",
+      "class": "read",
+      "file": "powermgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "getScheduledJob",
+      "class": "read",
+      "file": "powermgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "setScheduledJob",
+      "class": "write",
+      "file": "powermgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "deleteScheduledJob",
+      "class": "destructive",
+      "file": "powermgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "executeScheduledJob",
+      "class": "write",
+      "file": "powermgmt"
+    },
+    {
+      "service": "PowerMgmt",
+      "method": "enumerateStandbyModes",
+      "class": "read",
+      "file": "powermgmt"
+    },
+    {
+      "service": "Quota",
+      "method": "get",
+      "class": "read",
+      "file": "quota"
+    },
+    {
+      "service": "Quota",
+      "method": "set",
+      "class": "write",
+      "file": "quota"
+    },
+    {
+      "service": "Quota",
+      "method": "getByTypeName",
+      "class": "read",
+      "file": "quota"
+    },
+    {
+      "service": "Quota",
+      "method": "setByTypeName",
+      "class": "write",
+      "file": "quota"
+    },
+    {
+      "service": "Quota",
+      "method": "delete",
+      "class": "destructive",
+      "file": "quota"
+    },
+    {
+      "service": "Rrd",
+      "method": "generate",
+      "class": "write",
+      "file": "rrd"
+    },
+    {
+      "service": "Rrd",
+      "method": "getGraph",
+      "class": "read",
+      "file": "rrd"
+    },
+    {
+      "service": "Rsync",
+      "method": "getList",
+      "class": "read",
+      "file": "rsync"
+    },
+    {
+      "service": "Rsync",
+      "method": "get",
+      "class": "read",
+      "file": "rsync"
+    },
+    {
+      "service": "Rsync",
+      "method": "set",
+      "class": "write",
+      "file": "rsync"
+    },
+    {
+      "service": "Rsync",
+      "method": "delete",
+      "class": "destructive",
+      "file": "rsync"
+    },
+    {
+      "service": "Rsync",
+      "method": "execute",
+      "class": "write",
+      "file": "rsync"
+    },
+    {
+      "service": "Rsyncd",
+      "method": "getSettings",
+      "class": "read",
+      "file": "rsyncd"
+    },
+    {
+      "service": "Rsyncd",
+      "method": "setSettings",
+      "class": "write",
+      "file": "rsyncd"
+    },
+    {
+      "service": "Rsyncd",
+      "method": "getModuleList",
+      "class": "read",
+      "file": "rsyncd"
+    },
+    {
+      "service": "Rsyncd",
+      "method": "getModule",
+      "class": "read",
+      "file": "rsyncd"
+    },
+    {
+      "service": "Rsyncd",
+      "method": "setModule",
+      "class": "write",
+      "file": "rsyncd"
+    },
+    {
+      "service": "Rsyncd",
+      "method": "deleteModule",
+      "class": "destructive",
+      "file": "rsyncd"
+    },
+    {
+      "service": "Services",
+      "method": "getStatus",
+      "class": "read",
+      "file": "services"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "getCandidates",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "enumerateSharedFolders",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "getList",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "get",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "set",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "delete",
+      "class": "destructive",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "getPrivileges",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "setPrivileges",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "getPrivilegesByRole",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "setPrivilegesByRole",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "copyPrivileges",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "getFileACL",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "setFileACL",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "getPath",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "enumerateSnapshots",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "enumerateAllSnapshots",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "createSnapshot",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "createScheduledSnapshotTask",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "enumerateScheduledSnapshotTasks",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "enumerateAllScheduledSnapshotTasks",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "deleteSnapshot",
+      "class": "destructive",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "restoreSnapshot",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "fromSnapshot",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "getSnapshotLifecycle",
+      "class": "read",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "ShareMgmt",
+      "method": "setSnapshotLifecycle",
+      "class": "write",
+      "file": "sharemgmt"
+    },
+    {
+      "service": "Smart",
+      "method": "enumerateDevices",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "enumerateMonitoredDevices",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getList",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getListBg",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getSettings",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "setSettings",
+      "class": "write",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getDeviceSettings",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "setDeviceSettings",
+      "class": "write",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getAttributes",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getSelfTestLogs",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getInformation",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getExtendedInformation",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getScheduleList",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "getScheduledTest",
+      "class": "read",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "setScheduledTest",
+      "class": "write",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "deleteScheduledTest",
+      "class": "destructive",
+      "file": "smart"
+    },
+    {
+      "service": "Smart",
+      "method": "executeScheduledTest",
+      "class": "write",
+      "file": "smart"
+    },
+    {
+      "service": "SMB",
+      "method": "getSettings",
+      "class": "read",
+      "file": "smb"
+    },
+    {
+      "service": "SMB",
+      "method": "setSettings",
+      "class": "write",
+      "file": "smb"
+    },
+    {
+      "service": "SMB",
+      "method": "getShareList",
+      "class": "read",
+      "file": "smb"
+    },
+    {
+      "service": "SMB",
+      "method": "getShare",
+      "class": "read",
+      "file": "smb"
+    },
+    {
+      "service": "SMB",
+      "method": "setShare",
+      "class": "write",
+      "file": "smb"
+    },
+    {
+      "service": "SMB",
+      "method": "deleteShare",
+      "class": "destructive",
+      "file": "smb"
+    },
+    {
+      "service": "SMB",
+      "method": "emptyRecycleBin",
+      "class": "destructive",
+      "file": "smb"
+    },
+    {
+      "service": "SMB",
+      "method": "getStats",
+      "class": "read",
+      "file": "smb"
+    },
+    {
+      "service": "SSH",
+      "method": "get",
+      "class": "read",
+      "file": "ssh"
+    },
+    {
+      "service": "SSH",
+      "method": "set",
+      "class": "write",
+      "file": "ssh"
+    },
+    {
+      "service": "SSH",
+      "method": "getStats",
+      "class": "read",
+      "file": "ssh"
+    },
+    {
+      "service": "Syslog",
+      "method": "getSettings",
+      "class": "read",
+      "file": "syslog"
+    },
+    {
+      "service": "Syslog",
+      "method": "setSettings",
+      "class": "write",
+      "file": "syslog"
+    },
+    {
+      "service": "System",
+      "method": "noop",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getTopInfo",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getShells",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "reboot",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "shutdown",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "standby",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "suspend",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "hibernate",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getTimeSettings",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "setTimeSettings",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "setDate",
+      "class": "write",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getTimeZoneList",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getInformation",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getDiagnosticReport",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getCpuStats",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "System",
+      "method": "getCpuGovernors",
+      "class": "read",
+      "file": "system"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "authUser",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "verifyChallenge",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "enumerateSystemUsers",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "enumerateUsers",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "enumerateAllUsers",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "enumerateSystemGroups",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "enumerateGroups",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "enumerateAllGroups",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "getUserList",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "getUser",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "getUserByContext",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "setUser",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "setUserByContext",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "deleteUser",
+      "class": "destructive",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "importUsers",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "getGroupList",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "getGroup",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "setGroup",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "deleteGroup",
+      "class": "destructive",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "importGroups",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "getSettings",
+      "class": "read",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "setSettings",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "UserMgmt",
+      "method": "setPasswordByContext",
+      "class": "write",
+      "file": "usermgmt"
+    },
+    {
+      "service": "WebGui",
+      "method": "getSettings",
+      "class": "read",
+      "file": "webgui"
+    },
+    {
+      "service": "WebGui",
+      "method": "setSettings",
+      "class": "write",
+      "file": "webgui"
+    },
+    {
+      "service": "WebGui",
+      "method": "dismissWelcomeMessage",
+      "class": "write",
+      "file": "webgui"
+    },
+    {
+      "service": "WebGui",
+      "method": "getLocalStorageItems",
+      "class": "read",
+      "file": "webgui"
+    },
+    {
+      "service": "WebGui",
+      "method": "setLocalStorageItem",
+      "class": "write",
+      "file": "webgui"
+    },
+    {
+      "service": "WebGui",
+      "method": "clearLocalStorageItems",
+      "class": "write",
+      "file": "webgui"
+    },
+    {
+      "service": "WebGui",
+      "method": "getAutoLogoutSettings",
+      "class": "read",
+      "file": "webgui"
+    }
+  ]
+}

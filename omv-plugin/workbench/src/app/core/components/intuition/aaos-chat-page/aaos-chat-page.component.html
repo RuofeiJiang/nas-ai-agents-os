@@ -1,0 +1,64 @@
+<div class="aaos-chat">
+  <!-- 设置面板 -->
+  <div class="aaos-settings" *ngIf="showSettings">
+    <div class="aaos-settings__header">
+      <h3>AAOS 配置</h3>
+      <button class="aaos-settings__close" (click)="toggleSettings()">✕</button>
+    </div>
+    <div *ngIf="configLoading" class="aaos-settings__loading">加载中...</div>
+    <div *ngIf="!configLoading">
+      <div class="aaos-settings__section">
+        <h4>API Keys</h4>
+        <div class="aaos-settings__key" *ngFor="let item of envKeys; let i = index">
+          <span class="aaos-settings__key-name">{{ item.key }}</span>
+          <span class="aaos-settings__key-value" *ngIf="!item.editing">{{ item.value }}<button class="aaos-settings__edit" (click)="editKey(i)">改</button></span>
+          <input *ngIf="item.editing" type="text" [(ngModel)]="item.value" [placeholder]="'输入新的 ' + item.key" class="aaos-settings__key-input" />
+        </div>
+      </div>
+      <div class="aaos-settings__section">
+        <h4>模型配置 (models.toml)</h4>
+        <textarea [(ngModel)]="modelsToml" class="aaos-settings__textarea" rows="10"></textarea>
+      </div>
+      <div class="aaos-settings__actions">
+        <button (click)="saveConfig()" [disabled]="configSaving" class="aaos-settings__save">{{ configSaving ? '保存中...' : '保存并重启 Core' }}</button>
+        <span class="aaos-settings__msg" *ngIf="configMsg">{{ configMsg }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工具栏 -->
+  <div class="aaos-chat__toolbar">
+    <button (click)="toggleSettings()" class="aaos-chat__btn">⚙️ 设置</button>
+    <button (click)="clearHistory()" class="aaos-chat__btn" *ngIf="messages.length > 0">🗑 清空</button>
+    <div class="aaos-chat__quick">
+      <button *ngFor="let qa of quickActions" (click)="quickSend(qa)" [disabled]="loading" class="aaos-chat__quick-btn">{{ qa }}</button>
+    </div>
+  </div>
+
+  <!-- 消息列表 -->
+  <div class="aaos-chat__messages">
+    <div class="aaos-chat__empty" *ngIf="messages.length === 0">
+      输入自然语言指令操作 NAS,或点上方快捷按钮:<br />
+      <code>列出磁盘</code> · <code>系统信息</code> · <code>列出共享</code> · <code>创建共享叫xxx</code>
+    </div>
+    <div class="aaos-chat__msg" *ngFor="let m of messages; track $index" [class.aaos-chat__msg--user]="m.role === 'user'">
+      <div class="aaos-chat__role">{{ m.role === 'user' ? '🧑 你' : '🤖 AAOS' }}</div>
+      <div class="aaos-chat__text">
+        <div class="aaos-chat__warn" *ngIf="m.status === 'needs_confirmation' && m.confirmToken">⚠️ 破坏性操作,需确认:</div>
+        <div class="aaos-chat__md" *ngIf="m.html" [innerHTML]="m.html"></div>
+        <pre *ngIf="!m.html">{{ m.text }}</pre>
+        <button class="aaos-chat__confirm" *ngIf="m.status === 'needs_confirmation' && m.confirmToken" (click)="confirm(m.confirmToken)" [disabled]="loading">确认执行</button>
+      </div>
+    </div>
+    <div class="aaos-chat__msg aaos-chat__msg--assistant" *ngIf="loading">
+      <div class="aaos-chat__role">🤖 AAOS</div>
+      <div class="aaos-chat__text"><span class="aaos-chat__typing">思考中…</span></div>
+    </div>
+  </div>
+
+  <!-- 输入框 -->
+  <div class="aaos-chat__input">
+    <input type="text" [(ngModel)]="input" (keyup.enter)="send()" placeholder="输入自然语言指令…" [disabled]="loading" />
+    <button (click)="send()" [disabled]="loading || !input.trim()">发送</button>
+  </div>
+</div>

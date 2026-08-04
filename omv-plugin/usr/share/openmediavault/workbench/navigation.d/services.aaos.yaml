@@ -1,0 +1,7 @@
+version: "1.0"
+type: navigation-item
+data:
+  path: "services.aaos"
+  text: _("AAOS")
+  icon: "mdi:robot-outline"
+  url: "/services/aaos"

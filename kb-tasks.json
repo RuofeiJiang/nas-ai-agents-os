@@ -1,0 +1,133 @@
+[
+  {
+    "name": "创建SMB共享",
+    "keywords": ["创建", "smb", "samba", "共享"],
+    "description": "创建共享文件夹 + SMB 共享 + 应用配置",
+    "steps": [
+      {"agent": "filesystem", "action": "create_share", "args": {"name": "$name"}},
+      {"agent": "filesystem", "action": "create_smb_share", "args": {"name": "$name"}},
+      {"agent": "system", "action": "apply_config"}
+    ]
+  },
+  {
+    "name": "备份任务",
+    "keywords": ["备份", "backup", "同步"],
+    "description": "查磁盘空间 -> 备份 -> 列出备份结果",
+    "steps": [
+      {"agent": "system", "action": "check_state", "args": {"area": "disk"}},
+      {"agent": "backup", "action": "backup", "args": {"src": "$src", "dest": "$dest"}},
+      {"agent": "backup", "action": "list_backups", "args": {"path": "$dest"}}
+    ]
+  },
+  {
+    "name": "备份验证",
+    "keywords": ["验证", "校验", "verify"],
+    "description": "备份 -> 验证一致性 -> 查备份状态",
+    "steps": [
+      {"agent": "backup", "action": "backup", "args": {"src": "$src", "dest": "$dest"}},
+      {"agent": "backup", "action": "verify", "args": {"src": "$src", "dest": "$dest"}},
+      {"agent": "backup", "action": "backup_status", "args": {"dest": "$dest"}}
+    ]
+  },
+  {
+    "name": "照片打标签",
+    "keywords": ["照片", "标签", "相册", "photo", "tag"],
+    "description": "扫描照片 -> 批量打标签 -> 统计",
+    "steps": [
+      {"agent": "vision", "action": "scan_photos", "args": {"path": "$path"}},
+      {"agent": "vision", "action": "tag_all_photos", "args": {"path": "$path"}},
+      {"agent": "vision", "action": "photo_stats"}
+    ]
+  },
+  {
+    "name": "容器部署",
+    "keywords": ["部署", "容器", "docker", "podman", "装"],
+    "description": "生成 compose 文件 -> 拉镜像 -> 启动编排 -> 检查健康",
+    "steps": [
+      {"agent": "docker", "action": "generate_compose", "args": {"name": "$name", "image": "$image"}},
+      {"agent": "docker", "action": "pull_image", "args": {"image": "$image"}},
+      {"agent": "docker", "action": "compose_up", "args": {"file": "/tmp/$name-compose.yml"}},
+      {"agent": "docker", "action": "health_check"}
+    ]
+  },
+  {
+    "name": "容器故障排查",
+    "keywords": ["故障", "排查", "debug", "为什么挂", "日志"],
+    "description": "列容器 -> 查日志 -> 健康检查",
+    "steps": [
+      {"agent": "docker", "action": "list_containers"},
+      {"agent": "docker", "action": "container_logs", "args": {"name": "$name"}},
+      {"agent": "docker", "action": "health_check"}
+    ]
+  },
+  {
+    "name": "容器重建",
+    "keywords": ["重建", "rebuild", "重装容器"],
+    "description": "停编排 -> 拉新镜像 -> 启编排 -> 健康检查",
+    "steps": [
+      {"agent": "docker", "action": "compose_down", "args": {"file": "$file"}},
+      {"agent": "docker", "action": "pull_image", "args": {"image": "$image"}},
+      {"agent": "docker", "action": "compose_up", "args": {"file": "$file"}},
+      {"agent": "docker", "action": "health_check"}
+    ]
+  },
+  {
+    "name": "系统健康检查",
+    "keywords": ["健康", "检查", "状态", "巡检"],
+    "description": "系统信息 + SMART + 磁盘空间 + 容器",
+    "steps": [
+      {"agent": "system", "action": "system_info"},
+      {"agent": "system", "action": "check_smart"},
+      {"agent": "system", "action": "disk_usage"},
+      {"agent": "docker", "action": "health_check"}
+    ]
+  },
+  {
+    "name": "磁盘空间清理",
+    "keywords": ["清理", "空间", "清磁盘", "不够"],
+    "description": "查空间 -> 清镜像 -> 清缓存 -> 再查空间",
+    "steps": [
+      {"agent": "system", "action": "disk_usage"},
+      {"agent": "docker", "action": "prune_images"},
+      {"agent": "system", "action": "clean_caches"},
+      {"agent": "system", "action": "disk_usage"}
+    ]
+  },
+  {
+    "name": "文件整理",
+    "keywords": ["整理", "分类", "去重", "标签"],
+    "description": "分类文件 -> 去重 -> 自动标签 -> 列标签",
+    "steps": [
+      {"agent": "filesystem", "action": "classify_files", "args": {"path": "$path"}},
+      {"agent": "filesystem", "action": "dedup", "args": {"path": "$path"}},
+      {"agent": "filesystem", "action": "auto_tag_directory", "args": {"path": "$path"}},
+      {"agent": "filesystem", "action": "list_tags"}
+    ]
+  },
+  {
+    "name": "媒体库整理",
+    "keywords": ["媒体", "影音", "刮削", "library"],
+    "description": "扫描媒体库 -> 逐个刮削元数据",
+    "steps": [
+      {"agent": "media", "action": "media_library_scan", "args": {"path": "$path"}}
+    ]
+  },
+  {
+    "name": "HA设备控制",
+    "keywords": ["开灯", "关灯", "调温", "控制设备", "homeassistant"],
+    "description": "查HA设备 -> 调服务控制设备",
+    "steps": [
+      {"agent": "homeassistant", "action": "list_entities"},
+      {"agent": "homeassistant", "action": "call_service", "args": {"domain": "$domain", "service": "$service", "payload": "$payload"}}
+    ]
+  },
+  {
+    "name": "HA自动化查看",
+    "keywords": ["自动化", "automation", "场景"],
+    "description": "查自动化规则 -> 查可用服务",
+    "steps": [
+      {"agent": "homeassistant", "action": "list_automations"},
+      {"agent": "homeassistant", "action": "list_services"}
+    ]
+  }
+]

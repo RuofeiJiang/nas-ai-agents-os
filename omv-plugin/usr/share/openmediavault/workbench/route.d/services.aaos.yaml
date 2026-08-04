@@ -1,0 +1,6 @@
+version: "1.0"
+type: route
+data:
+  url: "/services/aaos"
+  title: _("AAOS")
+  component: omv-services-aaos-chat-page
