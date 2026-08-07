@@ -2,10 +2,11 @@
 
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-musl-orange.svg)](https://www.rust-lang.org/)
-[![Docker](https://img.shields.io/badge/Docker-✓-2496ED.svg)](https://www.docker.com/)
+[![Docker](https://img.shields.io/badge/Docker-WIP-2496ED.svg)](https://www.docker.com/)
 
-> 一个 Docker 镜像，让你的 NAS 拥有 AI 大脑。
-> 支持群晖 / QNAP / TrueNAS / OMV / Unraid / 任何能跑 Docker 的 NAS。
+> 一个 AI 大脑，让你的 NAS 听懂自然语言。
+
+> ⚠️ **项目状态**：开发中 (v0.1.0)。OMV 8 部署已端到端验证可用（见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)）；Docker 打包进行中（未验证）；群晖 / QNAP / TrueNAS / Unraid 等多平台适配规划中。
 
 ## 一句话
 
@@ -47,30 +48,34 @@
 
 ## 快速开始
 
+> 当前推荐源码 + systemd 部署（已在 OMV 8 端到端验证）。完整步骤见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)。
+
 ```bash
-# 1. 拉镜像
-docker pull ruofeijiang/aaos-nas:latest
+# 1. 构建（需 Rust + musl-tools）
+cargo build --release --target x86_64-unknown-linux-musl
 
-# 2. 启动
-docker run -d \
-  --name aaos \
-  --restart unless-stopped \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /your/nas/data:/data:ro \
-  -v aaos-config:/config \
-  -p 8080:8080 \
-  -e AAOS_API_KEY=your-api-key \
-  ruofeijiang/aaos-nas:latest
+# 2. 部署到 NAS（OMV 8 / Debian）
+sudo ./deploy-aaos.sh
 
-# 3. 打开浏览器
-# http://your-nas-ip:8080
+# 3. 配置 LLM（火山方舟 coding plan 等）
+sudo vim /etc/aaos/models.toml
+
+# 4. 测试
+aaos-cli "列出磁盘"
+```
+
+Docker 部署（`docker-compose.yml` 已就绪，**尚未验证**）：
+
+```bash
+cp docker.env.example .env   # 填入 API key
+docker compose up -d
 ```
 
 ## 9 个 Agent
 
 | Agent | 做什么 | 操作数 |
 |-------|--------|--------|
-| 🖥️ system | SMART 监控、磁盘健康、空间清理、缓存管理 | 13 |
+| 🖥️ system | SMART 监控、磁盘健康、空间清理、缓存管理 | 12 |
 | 🐳 docker | 容器启停、compose 管理、镜像清理、诊断 | 15 |
 | 📁 filesystem | 文件搜索、分类、去重、标签、共享创建 | 19 |
 | 💾 backup | rsync 备份、恢复、校验、定时任务 | 6 |
@@ -92,14 +97,11 @@ docker run -d \
 
 ## 支持平台
 
-| NAS 系统 | Docker 支持 | 状态 |
-|---------|------------|------|
-| 群晖 Synology | ✅ Container Manager | 已测试 |
-| QNAP | ✅ Container Station | 已测试 |
-| TrueNAS Scale | ✅ Apps / Docker | 已测试 |
-| OpenMediaVault | ✅ omv-extras Docker | 已测试 |
-| Unraid | ✅ Docker | 已测试 |
-| 任何 Linux + Docker | ✅ | 已测试 |
+| NAS 系统 | 适配方式 | 状态 |
+|---------|---------|------|
+| OpenMediaVault 8 | 源码 + systemd / OMV 插件 | ✅ 已验证 |
+| 任何 Linux + Docker | Docker compose | 🔧 进行中（未验证） |
+| 群晖 / QNAP / TrueNAS / Unraid | Docker | 📋 规划中 |
 
 ## 技术栈
 
@@ -108,7 +110,7 @@ docker run -d \
 | Core | Rust (musl 静态编译) |
 | LLM | deepseek-v4-pro (OpenAI 兼容) |
 | 容器 | Docker |
-| Web UI | React |
+| Web UI | Angular（OMV workbench 插件） |
 | 知识库 | JSON 驱动，263 个 NAS 操作 |
 
 ## 相关

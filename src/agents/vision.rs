@@ -167,7 +167,7 @@ impl VisionAgent {
     }
     async fn smart_execute(&self, action: &str, args: &Value) -> ActionResult {
         let user_request = args.get("input").and_then(|v| v.as_str()).unwrap_or(action);
-        let mut data = serde_json::json!({});
+        let data = serde_json::json!({});
         let library = match ModelLibrary::load() { Ok(l) => l, Err(e) => return ActionResult::err(format!("模型库: {e}")) };
         match llm_helper::smart_analyze("vision", user_request, &data, &library).await {
             Ok(analysis) => ActionResult::ok(serde_json::json!({"analysis": analysis}), "智能分析完成"),

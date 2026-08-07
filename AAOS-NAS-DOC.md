@@ -125,22 +125,25 @@ fallback_model = "qwen2.5:7b"
 
 ---
 
-## 4. Execution Agent 全量功能(8 个 / 70 个 action)
+## 4. Execution Agent 全量功能(9 个 / 77 个 action)
 
-### 4.1 system-agent(9 个)
-系统维护:SMART/系统信息/磁盘空间/实时状态/配置/缓存/更新/网络/重启
+### 4.1 system-agent(12 个)
+系统维护:SMART/系统信息/磁盘/文件系统/用户/空间/实时状态/配置/缓存/更新/网络/重启
 
 | # | action | 说明 | 参数 | 破坏性 |
 |---|---|---|---|---|
 | 1 | check_smart | 磁盘 SMART 健康(含温度) | - | |
 | 2 | system_info | CPU/内存/uptime/版本 | - | |
-| 3 | disk_usage | 磁盘/内存空间 | - | |
-| 4 | check_state | 实时状态(L3 预检) | area | |
-| 5 | apply_config | 应用 OMV 配置变更 | - | |
-| 6 | clean_caches | 清缓存(apt+tmp+日志) | - | |
-| 7 | check_updates | 检查可升级包 | - | |
-| 8 | network_info | 网络接口信息 | - | |
-| 9 | reboot_system | 重启系统 | - | ⚠️ |
+| 3 | list_disks | 列出所有磁盘设备 | - | |
+| 4 | list_filesystems | 列出所有文件系统 | - | |
+| 5 | list_users | 列出所有用户 | - | |
+| 6 | disk_usage | 磁盘/内存空间 | - | |
+| 7 | check_state | 实时状态(L3 预检) | area | |
+| 8 | apply_config | 应用 OMV 配置变更 | - | |
+| 9 | clean_caches | 清缓存(apt+tmp+日志) | - | |
+| 10 | check_updates | 检查可升级包 | - | |
+| 11 | network_info | 网络接口信息 | - | |
+| 12 | reboot_system | 重启系统 | - | ⚠️ |
 
 ### 4.2 docker-agent(15 个)
 容器管理:启停/日志/镜像/compose/资源/执行
@@ -244,6 +247,16 @@ fallback_model = "qwen2.5:7b"
 | 4 | list_services | 列出可用服务 | - | |
 | 5 | list_automations | 列出自动化规则 | - | |
 | 6 | fire_event | 触发自定义事件 | event_type*, payload | |
+
+### 4.9 cloud-agent(4 个)
+网盘管理:经 Alist 适配百度/阿里云盘,列文件/上传/下载/信息
+
+| # | action | 说明 | 参数 | 破坏性 |
+|---|---|---|---|---|
+| 1 | list_cloud | 列网盘文件 | path | |
+| 2 | download_from_cloud | 从网盘下载到 NAS | remote_path*, local_path | |
+| 3 | upload_to_cloud | 从 NAS 上传到网盘 | local_path*, remote_path | |
+| 4 | cloud_info | 已配置云存储列表 | - | |
 
 ---
 

@@ -167,7 +167,7 @@ async fn handle_request(
             let resp = match result { Ok(r) => format_result(&r), Err(e) => format!("执行失败: {e:#}") };
             let _ = write_message(write, &Message::Response { id, status: ResponseStatus::Success, output: resp, confirmation_token: None }).await;
             send_event(sentinel_socket, EventSource::Ai, Severity::Warning, "ai.destructive_executed",
-                serde_json::json!({"call": p.call.display(), "description": p.call.description})).await;
+                serde_json::json!({"call": p.call.display(), "description": p.call.description, "request_id": p.request_id})).await;
             return;
         }
         // 再查 Intent/Plan pending
@@ -200,7 +200,7 @@ async fn handle_request(
                     let _ = write_message(write, &Message::Response { id, status: ResponseStatus::Success, output: nl, confirmation_token: None }).await;
                 }
                 send_event(sentinel_socket, EventSource::Ai, Severity::Warning, "ai.destructive_confirmed",
-                    serde_json::json!({})).await;
+                    serde_json::json!({"request_id": pi.request_id})).await;
                 return;
             }
             None => {

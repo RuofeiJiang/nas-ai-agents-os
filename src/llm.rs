@@ -7,7 +7,7 @@ use anyhow::{Context, Result};
 use serde_json::{json, Value};
 use std::time::Duration;
 
-use crate::agents::{dispatch, dispatch_plan, registry_text, ActionResult, Intent, Plan};
+use crate::agents::{dispatch, registry_text, ActionResult, Intent, Plan};
 use crate::models::{ModelLibrary, Provider};
 
 /// LLM HTTP 客户端(OpenAI 兼容 chat completions + function calling)
