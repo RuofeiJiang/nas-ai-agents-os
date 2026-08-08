@@ -71,7 +71,7 @@ cp docker.env.example .env   # 填入 API key
 docker compose up -d
 ```
 
-## 9 个 Agent
+## 9 个内置 Agent + 动态扩展
 
 | Agent | 做什么 | 操作数 |
 |-------|--------|--------|
@@ -85,6 +85,8 @@ docker compose up -d
 | 🏠 homeassistant | 智能家居设备/服务/自动化 | 6 |
 | ☁️ cloud | 百度/阿里云盘（经 Alist） | 4 |
 
+> 另有 **generic-http-agent**（数据驱动）：部署新 Docker 服务时自动探测其 OpenAPI，生成 KB + 注册 agent，无需写 Rust。已用 demo(FastAPI) 端到端验证：发现 4 个 action → NL 调用 → destructive 接 Sentinel 确认。详见 [PLAN-dynamic-agent.md](PLAN-dynamic-agent.md)。
+
 ## 核心特性
 
 - **自然语言交互**：说人话，不用记命令
@@ -94,6 +96,7 @@ docker compose up -d
 - **每日巡检**：每天 08:00 自动健康检查
 - **规则优先**：常见查询秒回，跳过 LLM
 - **三层知识库**：L1 通用 + L2 系统 + L3 实时状态，准确率 100%（17/17）
+- **🔄 动态自扩展**：部署 Docker 服务自动发现 OpenAPI，生成 KB + agent，无需写代码
 
 ## 支持平台
 
