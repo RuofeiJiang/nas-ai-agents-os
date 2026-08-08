@@ -42,6 +42,10 @@ struct Args {
     /// 探测服务 OpenAPI -> 自动生成 KB + 注册动态 agent(值:NAME BASE_URL)
     #[arg(long, num_args = 2, value_names = ["NAME", "BASE_URL"])]
     discover: Option<Vec<String>>,
+
+    /// --discover 的鉴权 token(可选,带 Authorization: Bearer 探测鉴权服务的 openapi)
+    #[arg(long)]
+    discover_token: Option<String>,
 }
 
 #[tokio::main]
@@ -71,7 +75,7 @@ async fn main() -> Result<()> {
     if let Some(vals) = &args.discover {
         let name = vals.first().unwrap();
         let base_url = vals.get(1).unwrap();
-        return discover_service(name, base_url).await;
+        return discover_service(name, base_url, args.discover_token.as_deref()).await;
     }
 
     // ---- 默认:自然语言聊天 ----
@@ -199,10 +203,10 @@ async fn daily_check() -> Result<()> {
     Ok(())
 }
 
-async fn discover_service(name: &str, base_url: &str) -> Result<()> {
+async fn discover_service(name: &str, base_url: &str, token: Option<&str>) -> Result<()> {
     println!("探测 {} 的 OpenAPI (base_url={})...", name, base_url);
     let base_url_env = format!("{}_URL", name.to_uppercase());
-    match aaos::agents::discover::discover_and_register(name, base_url, &base_url_env, name, &format!("自动纳管: {name}")).await {
+    match aaos::agents::discover::discover_and_register(name, base_url, token, &base_url_env, name, &format!("自动纳管: {name}")).await {
         Ok((count, kb_path)) => {
             println!("✓ 发现成功:生成 {} 个 action,KB: {}", count, kb_path);
             println!("  注册为动态 agent: {} (经 generic-http-agent 执行)", name);

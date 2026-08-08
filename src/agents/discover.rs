@@ -28,25 +28,41 @@ const SKIP_PREFIXES: &[&str] = &[
 ];
 
 /// 探测服务的 OpenAPI,返回 spec。逐个试常见路径,命中含 paths 的即返回。
-pub async fn discover_service(base_url: &str) -> Result<Value> {
+pub async fn discover_service(base_url: &str, token: Option<&str>) -> Result<Value> {
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(10))
         .build()?;
     let mut last_err = String::new();
     for path in OPENAPI_PATHS {
         let url = format!("{}{}", base_url.trim_end_matches('/'), path);
-        match client.get(&url).send().await {
-            Ok(resp) if resp.status().is_success() => {
-                let body: Value = resp.json().await.with_context(|| format!("解析 {url}"))?;
-                if body.get("paths").is_some() {
-                    tracing::info!("发现 OpenAPI: {url}");
-                    return Ok(body);
-                }
-                last_err = format!("{path}: 无 paths 字段");
-            }
-            Ok(resp) => last_err = format!("{path} -> {}", resp.status()),
-            Err(e) => last_err = format!("{path} -> {e}"),
+        let mut req = client.get(&url);
+        if let Some(t) = token {
+            req = req.header("Authorization", format!("Bearer {t}"));
         }
+        let resp = match req.send().await {
+            Ok(r) => r,
+            Err(e) => {
+                last_err = format!("{path} -> {e}");
+                continue;
+            }
+        };
+        if !resp.status().is_success() {
+            last_err = format!("{path} -> {}", resp.status());
+            continue;
+        }
+        // 容错:非 JSON(如 HTML 前端)跳过该路径,不 bail
+        let body: Value = match resp.json().await {
+            Ok(b) => b,
+            Err(_) => {
+                last_err = format!("{path}: 非 JSON 响应");
+                continue;
+            }
+        };
+        if body.get("paths").is_some() {
+            tracing::info!("发现 OpenAPI: {url}");
+            return Ok(body);
+        }
+        last_err = format!("{path}: 无 paths 字段");
     }
     anyhow::bail!("未发现 OpenAPI(试了 {:?}): {}", OPENAPI_PATHS, last_err)
 }
@@ -201,8 +217,8 @@ pub fn register_agent(name: &str, description: &str, kb: &ServiceKb) -> Result<(
 }
 
 /// 完整流程:发现 OpenAPI -> 转 KB -> 写文件 -> 注册 agent。返回 (action 数, kb 路径)。
-pub async fn discover_and_register(name: &str, base_url: &str, base_url_env: &str, source: &str, description: &str) -> Result<(usize, String)> {
-    let spec = discover_service(base_url).await?;
+pub async fn discover_and_register(name: &str, base_url: &str, token: Option<&str>, base_url_env: &str, source: &str, description: &str) -> Result<(usize, String)> {
+    let spec = discover_service(base_url, token).await?;
     let kb = openapi_to_kb(&spec, name, base_url_env, source)?;
     let count = kb.actions.len();
     let kb_path = write_kb(&kb)?;

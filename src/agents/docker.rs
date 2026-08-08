@@ -276,7 +276,7 @@ impl DockerAgent {
 
         // 3. 发现 API + 生成 KB + 注册 agent
         let base_url_env = format!("{}_URL", name.to_uppercase());
-        match crate::agents::discover::discover_and_register(name, &base_url, &base_url_env, image, &format!("自动纳管: {image}")).await {
+        match crate::agents::discover::discover_and_register(name, &base_url, None, &base_url_env, image, &format!("自动纳管: {image}")).await {
             Ok((count, kb_path)) => ActionResult::ok(
                 json!({"service": name, "image": image, "base_url": base_url, "actions": count, "kb": kb_path, "token_env": format!("{}_TOKEN", name.to_uppercase())}),
                 format!("部署 {name} 成功,自动发现 {count} 个 action(需配 {}_TOKEN 鉴权)", name.to_uppercase()),
