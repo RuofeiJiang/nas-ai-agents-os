@@ -42,6 +42,13 @@ pub struct Auth {
     pub header: String, // header 名,默认 Authorization
     #[serde(default)]
     pub prefix: String, // 如 "Bearer"
+    // login 流程(auth_type="login":先 POST login_url 取 token,再注入 header)
+    #[serde(default)]
+    pub login_url: Option<String>,
+    #[serde(default)]
+    pub login_body: Option<Value>, // {"username":"$ENV","password":"$ENV"},$ 开头从 env 读
+    #[serde(default)]
+    pub token_path: Option<String>, // login 响应里 token 的字段名,默认 "token"
 }
 
 /// 单个 action -> HTTP 调用映射
@@ -122,7 +129,7 @@ impl GenericHttpAgent {
         if let Some(b) = body {
             req = req.json(&b);
         }
-        req = apply_auth(req, &kb.auth);
+        req = apply_auth(req, &kb.auth, &base_url).await;
 
         let resp = match req.send().await {
             Ok(r) => r,
@@ -190,21 +197,78 @@ pub fn build_query(args: &Value, params: &[KbParam]) -> Vec<(String, String)> {
     q
 }
 
-/// 按 auth 配置注入鉴权 header。token 缺失则不注入(让服务端拒绝,报错可见)。
-pub fn apply_auth(mut req: reqwest::RequestBuilder, auth: &Option<Auth>) -> reqwest::RequestBuilder {
-    if let Some(a) = auth {
-        if a.auth_type == "none" || a.auth_type.is_empty() {
-            return req;
-        }
-        let token = std::env::var(&a.token_env).unwrap_or_default();
-        if token.is_empty() {
-            return req;
-        }
-        let header = if a.header.is_empty() { "Authorization" } else { a.header.as_str() };
-        let val = if a.prefix.is_empty() { token } else { format!("{} {}", a.prefix, token) };
-        req = req.header(header, val);
+/// 按 auth 配置注入鉴权 header。auth_type=login 时先 POST login_url 取 token。
+/// token 缺失/login 失败则不注入(让服务端拒绝,报错可见)。
+pub async fn apply_auth(req: reqwest::RequestBuilder, auth: &Option<Auth>, base_url: &str) -> reqwest::RequestBuilder {
+    let Some(a) = auth else { return req; };
+    if a.auth_type == "none" || a.auth_type.is_empty() {
+        return req;
     }
-    req
+    let token = match a.auth_type.as_str() {
+        "login" => match login_token(a, base_url).await {
+            Ok(t) => t,
+            Err(e) => {
+                tracing::warn!("login 失败,不注入 token: {e}");
+                String::new()
+            }
+        },
+        _ => std::env::var(&a.token_env).unwrap_or_default(),
+    };
+    if token.is_empty() {
+        return req;
+    }
+    let header = if a.header.is_empty() { "Authorization" } else { a.header.as_str() };
+    let val = if a.prefix.is_empty() { token } else { format!("{} {}", a.prefix, token) };
+    req.header(header, val)
+}
+
+/// login 流程:POST login_url(相对 base_url)+ login_body($ENV 替换)-> 从响应 token_path 提取 token。
+async fn login_token(a: &Auth, base_url: &str) -> Result<String, String> {
+    let login_url = a.login_url.as_deref().unwrap_or("");
+    if login_url.is_empty() {
+        return Err("login_url 未配置".into());
+    }
+    let url = if login_url.starts_with("http") {
+        login_url.to_string()
+    } else {
+        format!("{}{}", base_url.trim_end_matches('/'), login_url)
+    };
+    let body = resolve_env_refs(&a.login_body);
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(15))
+        .build()
+        .map_err(|e| e.to_string())?;
+    let resp = client
+        .post(&url)
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| format!("login 请求失败: {e}"))?;
+    let json: Value = resp.json().await.map_err(|e| format!("login 响应解析失败: {e}"))?;
+    let path = a.token_path.as_deref().unwrap_or("token");
+    json.get(path)
+        .and_then(|t| t.as_str())
+        .map(|s| s.to_string())
+        .ok_or_else(|| format!("login 响应无 {path} 字段"))
+}
+
+/// 把 login_body 里 $VAR 开头的字符串替换为环境变量值(凭证不硬编码进 KB)。
+fn resolve_env_refs(body: &Option<Value>) -> Value {
+    let Some(b) = body else { return Value::Null; };
+    let Some(obj) = b.as_object() else { return b.clone(); };
+    let mut out = serde_json::Map::new();
+    for (k, v) in obj {
+        if let Some(s) = v.as_str() {
+            if let Some(var) = s.strip_prefix('$') {
+                out.insert(k.clone(), Value::String(std::env::var(var).unwrap_or_default()));
+            } else {
+                out.insert(k.clone(), v.clone());
+            }
+        } else {
+            out.insert(k.clone(), v.clone());
+        }
+    }
+    Value::Object(out)
 }
 
 /// 从响应体提取 response_path 字段;空则返回整体。
@@ -288,13 +352,20 @@ mod tests {
         assert_eq!(extract_response(&body, "missing"), body);
     }
 
-    #[test]
-    fn auth_none_no_header() {
-        // auth=none 不应注入(token 即使存在也不注入)
-        // 用一个假 client 验证不 panic
-        let auth = Some(Auth { auth_type: "none".into(), token_env: "X".into(), header: "".into(), prefix: "".into() });
+    #[tokio::test]
+    async fn auth_none_no_header() {
+        let auth = Some(Auth { auth_type: "none".into(), token_env: "X".into(), header: "".into(), prefix: "".into(), login_url: None, login_body: None, token_path: None });
         let client = reqwest::Client::new();
         let req = client.get("http://x");
-        let _ = apply_auth(req, &auth); // 不 panic 即可
+        let _ = apply_auth(req, &auth, "http://x").await; // 不 panic 即可
+    }
+
+    #[test]
+    fn resolve_env_refs_replaces_dollar() {
+        std::env::set_var("AAOS_TEST_USER", "admin");
+        let body = Some(json!({"username": "$AAOS_TEST_USER", "password": "hardcoded"}));
+        let out = resolve_env_refs(&body);
+        assert_eq!(out["username"], "admin");
+        assert_eq!(out["password"], "hardcoded");
     }
 }
