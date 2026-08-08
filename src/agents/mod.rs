@@ -8,9 +8,11 @@ use serde_json::Value;
 
 pub mod backup;
 pub mod cloud;
+pub mod discover;
 pub mod docker;
 pub mod download;
 pub mod filesystem;
+pub mod generic;
 pub mod ha;
 pub mod llm_helper;
 pub mod media;
@@ -71,7 +73,7 @@ pub async fn dispatch(intent: &Intent) -> ActionResult {
         "download" => download::DownloadAgent.execute(&intent.action, &intent.args).await,
         "homeassistant" => ha::HomeAssistantAgent.execute(&intent.action, &intent.args).await,
         "cloud" => cloud::CloudAgent.execute(&intent.action, &intent.args).await,
-        other => ActionResult::err(format!("未知 agent: {other}")),
+        other => generic::GenericHttpAgent.execute(other, &intent.action, &intent.args).await,
     }
 }
 

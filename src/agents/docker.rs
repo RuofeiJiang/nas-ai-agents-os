@@ -3,6 +3,7 @@
 //! 域:容器启停/日志/镜像管理/健康检查/compose 编排/资源监控/容器内执行。全用 podman CLI。
 
 use serde_json::{json, Value};
+use std::time::Duration;
 
 use crate::agents::{ActionResult, llm_helper};
 use crate::models::ModelLibrary;
@@ -27,6 +28,7 @@ impl DockerAgent {
             "compose_down" => self.compose("down", args).await,
             "compose_logs" => self.compose_logs(args).await,
             "generate_compose" => self.generate_compose(args).await,
+            "deploy_service" => self.deploy_service(args).await,
             _ => self.smart_execute(action, args).await,
         }
     }
@@ -233,6 +235,72 @@ impl DockerAgent {
             ),
             Err(e) => ActionResult::err(format!("写入失败: {e}")),
         }
+    }
+
+    /// 部署服务 + 自动纳管:生成 compose -> 启动 -> 等就绪 -> 发现 API -> 生成 KB -> 注册 agent。
+    async fn deploy_service(&self, args: &Value) -> ActionResult {
+        let name = args.get("name").and_then(|v| v.as_str()).unwrap_or("");
+        let image = args.get("image").and_then(|v| v.as_str()).unwrap_or("");
+        if name.is_empty() || image.is_empty() {
+            return ActionResult::err("缺少 name/image 参数");
+        }
+        let port = args.get("port").and_then(|v| v.as_str()).unwrap_or("");
+        let base_url = args
+            .get("base_url")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+            .unwrap_or_else(|| format!("http://localhost:{}", if port.is_empty() { "8080" } else { port }));
+        let volume = args.get("volume").and_then(|v| v.as_str()).unwrap_or("");
+        let env_str = args.get("env").and_then(|v| v.as_str()).unwrap_or("");
+
+        // 1. 生成 compose + 启动
+        let gen = self
+            .generate_compose(&json!({"name": name, "image": image, "port": port, "volume": volume, "network": "host", "env": env_str}))
+            .await;
+        if !gen.success {
+            return gen;
+        }
+        let file = gen.data.get("path").and_then(|v| v.as_str()).unwrap_or("/tmp/compose.yml");
+        let up = self.compose("up", &json!({"file": file})).await;
+        if !up.success {
+            return ActionResult::err(format!("容器启动失败: {}", up.message));
+        }
+
+        // 2. 等服务就绪(任何 HTTP 响应都算就绪)
+        if !self.wait_healthy(&base_url).await {
+            return ActionResult::ok(
+                json!({"service": name, "image": image, "base_url": base_url, "auto_managed": false}),
+                format!("部署 {name} 成功,但 {base_url} 未就绪(仅容器层管理,可能需手动配)"),
+            );
+        }
+
+        // 3. 发现 API + 生成 KB + 注册 agent
+        let base_url_env = format!("{}_URL", name.to_uppercase());
+        match crate::agents::discover::discover_and_register(name, &base_url, &base_url_env, image, &format!("自动纳管: {image}")).await {
+            Ok((count, kb_path)) => ActionResult::ok(
+                json!({"service": name, "image": image, "base_url": base_url, "actions": count, "kb": kb_path, "token_env": format!("{}_TOKEN", name.to_uppercase())}),
+                format!("部署 {name} 成功,自动发现 {count} 个 action(需配 {}_TOKEN 鉴权)", name.to_uppercase()),
+            ),
+            Err(e) => ActionResult::ok(
+                json!({"service": name, "image": image, "base_url": base_url, "auto_managed": false}),
+                format!("部署 {name} 成功,但未发现可用 API(仅容器层管理): {e:#}"),
+            ),
+        }
+    }
+
+    /// 轮询 base_url 直到服务响应(任何 HTTP 状态都算就绪,含 404)。最多 ~30s。
+    async fn wait_healthy(&self, base_url: &str) -> bool {
+        let client = match reqwest::Client::builder().timeout(Duration::from_secs(3)).build() {
+            Ok(c) => c,
+            Err(_) => return false,
+        };
+        for _ in 0..15 {
+            if client.get(base_url).send().await.map(|r| r.status().as_u16() >= 200).unwrap_or(false) {
+                return true;
+            }
+            tokio::time::sleep(Duration::from_secs(2)).await;
+        }
+        false
     }
 
     /// LLM 智能分析:收集容器数据 -> 域 LLM 诊断 -> 返回智能结果

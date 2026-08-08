@@ -38,6 +38,10 @@ struct Args {
     /// 每日巡检:system-agent 全面检查 + Core 翻 NL 报告
     #[arg(long)]
     daily_check: bool,
+
+    /// 探测服务 OpenAPI -> 自动生成 KB + 注册动态 agent(值:NAME BASE_URL)
+    #[arg(long, num_args = 2, value_names = ["NAME", "BASE_URL"])]
+    discover: Option<Vec<String>>,
 }
 
 #[tokio::main]
@@ -63,6 +67,11 @@ async fn main() -> Result<()> {
     }
     if args.daily_check {
         return daily_check().await;
+    }
+    if let Some(vals) = &args.discover {
+        let name = vals.first().unwrap();
+        let base_url = vals.get(1).unwrap();
+        return discover_service(name, base_url).await;
     }
 
     // ---- 默认:自然语言聊天 ----
@@ -186,6 +195,20 @@ async fn daily_check() -> Result<()> {
         println!("{}", nl);
     } else {
         println!("巡检失败: {}", result.message);
+    }
+    Ok(())
+}
+
+async fn discover_service(name: &str, base_url: &str) -> Result<()> {
+    println!("探测 {} 的 OpenAPI (base_url={})...", name, base_url);
+    let base_url_env = format!("{}_URL", name.to_uppercase());
+    match aaos::agents::discover::discover_and_register(name, base_url, &base_url_env, name, &format!("自动纳管: {name}")).await {
+        Ok((count, kb_path)) => {
+            println!("✓ 发现成功:生成 {} 个 action,KB: {}", count, kb_path);
+            println!("  注册为动态 agent: {} (经 generic-http-agent 执行)", name);
+            println!("  需配 {}_URL / {}_TOKEN 环境变量", name.to_uppercase(), name.to_uppercase());
+        }
+        Err(e) => println!("✗ 发现失败: {e:#}"),
     }
     Ok(())
 }
