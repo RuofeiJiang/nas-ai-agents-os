@@ -3,7 +3,7 @@ use aaos::ipc::{connect, write_message, Message};
 use aaos::llm;
 use aaos::models::ModelLibrary;
 use serde_json::json;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::Parser;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tracing::info;
@@ -46,6 +46,10 @@ struct Args {
     /// --discover 的鉴权 token(可选,带 Authorization: Bearer 探测鉴权服务的 openapi)
     #[arg(long)]
     discover_token: Option<String>,
+
+    /// 从文档(README/路由代码)LLM 提取 API -> 生成 KB + 注册(值:NAME DOC_FILE)
+    #[arg(long, num_args = 2, value_names = ["NAME", "DOC_FILE"])]
+    discover_docs: Option<Vec<String>>,
 }
 
 #[tokio::main]
@@ -76,6 +80,11 @@ async fn main() -> Result<()> {
         let name = vals.first().unwrap();
         let base_url = vals.get(1).unwrap();
         return discover_service(name, base_url, args.discover_token.as_deref()).await;
+    }
+    if let Some(vals) = &args.discover_docs {
+        let name = vals.first().unwrap();
+        let doc_file = vals.get(1).unwrap();
+        return discover_from_docs_cmd(name, doc_file).await;
     }
 
     // ---- 默认:自然语言聊天 ----
@@ -213,6 +222,26 @@ async fn discover_service(name: &str, base_url: &str, token: Option<&str>) -> Re
             println!("  需配 {}_URL / {}_TOKEN 环境变量", name.to_uppercase(), name.to_uppercase());
         }
         Err(e) => println!("✗ 发现失败: {e:#}"),
+    }
+    Ok(())
+}
+
+async fn discover_from_docs_cmd(name: &str, doc_file: &str) -> Result<()> {
+    let doc = std::fs::read_to_string(doc_file).with_context(|| format!("读 {doc_file}"))?;
+    println!("从文档发现 {} 的 API(文档:{})...", name, doc_file);
+    let lib = ModelLibrary::load()?;
+    let base_url_env = format!("{}_URL", name.to_uppercase());
+    match aaos::agents::discover::discover_from_docs(name, &doc, &base_url_env, doc_file, &lib).await {
+        Ok(kb) => {
+            let count = kb.actions.len();
+            let kb_path = aaos::agents::discover::write_kb(&kb)?;
+            aaos::agents::discover::register_agent(name, &format!("文档纳管: {name}"), &kb)?;
+            println!("✓ 文档发现成功:提取 {} 个 action,KB: {}", count, kb_path);
+            for (n, a) in &kb.actions {
+                println!("  - {} ({} {}): {}", n, a.method, a.path, a.description);
+            }
+        }
+        Err(e) => println!("✗ 文档发现失败: {e:#}"),
     }
     Ok(())
 }

@@ -181,7 +181,7 @@ async fn check_state(args: &Value) -> String {
 }
 
 /// 从 LLM 回复里提取 JSON。
-fn extract_json(text: &str) -> Result<String> {
+pub fn extract_json(text: &str) -> Result<String> {
     let t = text.trim();
     let t = t.strip_prefix("```json").or_else(|| t.strip_prefix("```")).map(|s| s.trim_start_matches('\n')).unwrap_or(t);
     let t = t.strip_suffix("```").unwrap_or(t);
