@@ -85,7 +85,23 @@ docker compose up -d
 | 🏠 homeassistant | 智能家居设备/服务/自动化 | 6 |
 | ☁️ cloud | 百度/阿里云盘（经 Alist） | 4 |
 
-> 另有 **generic-http-agent**（数据驱动）：部署新 Docker 服务时自动探测其 OpenAPI，生成 KB + 注册 agent，无需写 Rust。已用 demo(FastAPI) 端到端验证：发现 4 个 action → NL 调用 → destructive 接 Sentinel 确认。详见 [PLAN-dynamic-agent.md](PLAN-dynamic-agent.md)。
+> 另有 **generic-http-agent**(数据驱动)+ 动态发现机制,见下方[动态 Agent 自扩展](#动态-agent-自扩展)。
+
+## 动态 Agent 自扩展
+
+部署 Docker 服务时自动生成管理它的 KB + agent,无需写 Rust。`generic-http-agent`(数据驱动)执行,三档发现策略 + 鉴权支持覆盖各类服务:
+
+**三档发现**(从易到难,层层兜底)
+
+| 档 | 机制 | 覆盖 |
+|---|---|---|
+| 1 自动 | OpenAPI 探测(`/openapi.json`) | FastAPI / 有 spec 的服务 |
+| 2 自动回退 | DRF OPTIONS(Django/DRF 根 + OPTIONS) | 标准 Django/DRF 项目 |
+| 3 手动 | LLM 读文档(README / 路由代码) | 无 spec + 非标准服务 |
+
+**鉴权支持**:static token(bearer/api_key)+ **JWT 登录流程**(发凭证 -> 拿 token -> 调 API),覆盖需登录的服务。
+
+**验证**:demo(FastAPI)openapi -> 4 action -> NL 调用;MusicTag(无 openapi + 自定义 DRF + JWT)LLM 读 `urls.py` -> 13 action。详见 [PLAN-dynamic-agent.md](PLAN-dynamic-agent.md)。
 
 ## 核心特性
 
@@ -96,7 +112,7 @@ docker compose up -d
 - **每日巡检**：每天 08:00 自动健康检查
 - **规则优先**：常见查询秒回，跳过 LLM
 - **三层知识库**：L1 通用 + L2 系统 + L3 实时状态，准确率 100%（17/17）
-- **🔄 动态自扩展**：部署 Docker 服务自动发现 OpenAPI，生成 KB + agent，无需写代码
+- **🔄 动态自扩展**：部署服务自动生成 KB + agent(三档发现:OpenAPI / DRF OPTIONS / LLM 读文档),支持 JWT 登录鉴权,无需写代码
 
 ## 支持平台
 
