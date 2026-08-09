@@ -23,6 +23,9 @@ pub enum Message {
         input: String,
         /// 用户对破坏性命令的确认 token
         confirmation_token: Option<String>,
+        /// 破坏性确认的安全口令(配了 AAOS_SAFE_PWD 时必填)
+        #[serde(default)]
+        safe_pwd: Option<String>,
     },
     /// Core → CLI：响应
     Response {
@@ -133,6 +136,7 @@ mod tests {
             id: "abc".into(),
             input: "看看池状态".into(),
             confirmation_token: None,
+            safe_pwd: None,
         };
         let s = m.encode().unwrap();
         let m2 = Message::decode(&s).unwrap();

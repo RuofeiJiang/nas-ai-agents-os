@@ -140,11 +140,29 @@ async fn handle_connection(
             }
         };
         match msg {
-            Message::Request { id, input, confirmation_token } => {
-                handle_request(id, input, confirmation_token, &mut write, sentinel_socket, pending.clone(), pending_intents.clone(), library.clone()).await;
+            Message::Request { id, input, confirmation_token, safe_pwd } => {
+                handle_request(id, input, confirmation_token, safe_pwd, &mut write, sentinel_socket, pending.clone(), pending_intents.clone(), library.clone()).await;
             }
             other => tracing::warn!("unexpected message: {other:?}"),
         }
+    }
+}
+
+/// 安全口令验证:配了 AAOS_SAFE_PWD 时,提供的口令必须匹配;未配则放行(兼容)。
+fn safe_pwd_ok(provided: &Option<String>) -> bool {
+    let expected = std::env::var("AAOS_SAFE_PWD").unwrap_or_default();
+    if expected.is_empty() {
+        return true;
+    }
+    provided.as_deref() == Some(&expected)
+}
+
+/// 破坏性提示里的口令 hint(配了口令才显示)。
+fn safe_pwd_hint() -> &'static str {
+    if std::env::var("AAOS_SAFE_PWD").map(|s| !s.is_empty()).unwrap_or(false) {
+        " + --safe-pwd <口令>"
+    } else {
+        ""
     }
 }
 
@@ -152,6 +170,7 @@ async fn handle_request(
     id: String,
     input: String,
     confirmation_token: Option<String>,
+    safe_pwd: Option<String>,
     write: &mut tokio::net::unix::OwnedWriteHalf,
     sentinel_socket: &str,
     pending: Arc<Mutex<HashMap<String, PendingDestructive>>>,
@@ -160,6 +179,12 @@ async fn handle_request(
 ) {
     // 确认破坏性调用(旧 OmvCall 确认 + 新 Intent/Plan 确认)
     if let Some(token) = confirmation_token {
+        // 验证安全口令(配了 AAOS_SAFE_PWD 时必填)
+        if !safe_pwd_ok(&safe_pwd) {
+            let _ = write_message(write, &Message::Response { id: id.clone(), status: ResponseStatus::Error, output: "安全口令错误或缺失(已配置 AAOS_SAFE_PWD)".into(), confirmation_token: None }).await;
+            send_event(sentinel_socket, EventSource::Ai, Severity::Warning, "ai.safe_pwd_failed", serde_json::json!({"id": id})).await;
+            return;
+        }
         // 先查旧 OmvCall pending
         let call = { pending.lock().await.remove(&token) };
         if let Some(p) = call {
@@ -231,7 +256,7 @@ async fn handle_request(
             let token = uuid();
             { pending.lock().await.insert(token.clone(), PendingDestructive { call: call.clone(), request_id: id.clone() }); }
             let _ = write_message(write, &Message::Response { id, status: ResponseStatus::NeedsConfirmation,
-                output: format!("⚠️ 破坏性操作: {}\n请用 --confirm {} 确认。", call.display(), token),
+                output: format!("⚠️ 破坏性操作: {}\n请用 --confirm {}{} 确认。", call.display(), token, safe_pwd_hint()),
                 confirmation_token: Some(token.clone()) }).await;
             send_event(sentinel_socket, EventSource::Ai, Severity::Warning, "ai.destructive_pending",
                 serde_json::json!({"call": call.display(), "confirmation_token": token})).await;
@@ -264,7 +289,7 @@ async fn handle_request(
                     intent: None, plan: Some(plan), request_id: id.clone(),
                 }); }
                 let _ = write_message(write, &Message::Response { id, status: ResponseStatus::NeedsConfirmation,
-                    output: format!("⚠️ 此操作含破坏性步骤: {}\n请用 --confirm {} 确认执行。", destructive_steps.join(", "), token),
+                    output: format!("⚠️ 此操作含破坏性步骤: {}\n请用 --confirm {}{} 确认执行。", destructive_steps.join(", "), token, safe_pwd_hint()),
                     confirmation_token: Some(token.clone()) }).await;
                 send_event(sentinel_socket, EventSource::Ai, Severity::Warning, "ai.destructive_pending_plan",
                     serde_json::json!({"steps": destructive_steps, "confirmation_token": token})).await;

@@ -23,6 +23,10 @@ struct Args {
     #[arg(long)]
     confirm: Option<String>,
 
+    /// 破坏性确认的安全口令(配了 AAOS_SAFE_PWD 时必填)
+    #[arg(long)]
+    safe_pwd: Option<String>,
+
     /// 列出模型库里的 provider + 模型
     #[arg(long)]
     list_models: bool,
@@ -102,6 +106,7 @@ async fn main() -> Result<()> {
         id: uuid().into(),
         input,
         confirmation_token: args.confirm,
+        safe_pwd: args.safe_pwd,
     };
     write_message(&mut write, &req).await?;
 
