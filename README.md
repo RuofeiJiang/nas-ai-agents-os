@@ -103,6 +103,16 @@ docker compose up -d
 
 **验证**:demo(FastAPI)openapi -> 4 action -> NL 调用;MusicTag(无 openapi + 自定义 DRF + JWT)LLM 读 `urls.py` -> 13 action。详见 [PLAN-dynamic-agent.md](PLAN-dynamic-agent.md)。
 
+## 微信桥
+
+AAOS 支持微信入口:微信消息 -> AAOS core.sock -> 回复发回微信,用自然语言在微信里控制 NAS。
+
+- 基于腾讯官方 `@tencent-weixin/openclaw-weixin` 协议(**不装 OpenClaw 框架**),扫码登录个人微信
+- AAOS 零改动(只读 core.sock,同 OMV 插件模式)
+- 白名单鉴权 + 破坏性操作走 Web UI 确认(微信拒绝)
+
+见 [wechat-bridge/](wechat-bridge/)。
+
 ## 核心特性
 
 - **自然语言交互**：说人话，不用记命令
@@ -113,6 +123,7 @@ docker compose up -d
 - **规则优先**：常见查询秒回，跳过 LLM
 - **三层知识库**：L1 通用 + L2 系统 + L3 实时状态，准确率 100%（17/17）
 - **🔄 动态自扩展**：部署服务自动生成 KB + agent(三档发现:OpenAPI / DRF OPTIONS / LLM 读文档),支持 JWT 登录鉴权,无需写代码
+- **多端接入**：Web UI / CLI / 微信(扫码登录个人微信,经 core.sock)
 
 ## 支持平台
 
