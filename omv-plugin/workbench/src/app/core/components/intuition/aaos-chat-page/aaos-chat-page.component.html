@@ -47,7 +47,7 @@
         <div class="aaos-chat__warn" *ngIf="m.status === 'needs_confirmation' && m.confirmToken">⚠️ 破坏性操作,需确认:</div>
         <div class="aaos-chat__md" *ngIf="m.html" [innerHTML]="m.html"></div>
         <pre *ngIf="!m.html">{{ m.text }}</pre>
-        <button class="aaos-chat__confirm" *ngIf="m.status === 'needs_confirmation' && m.confirmToken" (click)="confirm(m.confirmToken)" [disabled]="loading">确认执行</button>
+        <button class="aaos-chat__confirm" *ngIf="m.status === 'needs_confirmation' && m.confirmToken" (click)="confirm(m.confirmToken, m.needsPwd)" [disabled]="loading">确认执行</button>
       </div>
     </div>
     <div class="aaos-chat__msg aaos-chat__msg--assistant" *ngIf="loading">

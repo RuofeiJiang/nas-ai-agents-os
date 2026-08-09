@@ -45,6 +45,7 @@ class OMVRpcServiceAAOS extends \OMV\Rpc\ServiceAbstract
         ]);
         $input = strval($params['input'] ?? '');
         $confirm = $params['confirmation_token'] ?? null;
+        $safePwd = $params['safe_pwd'] ?? null;
         if ($input === '' && $confirm === null) {
             throw new \OMV\BaseException(
                 "Either 'input' or 'confirmation_token' is required."
@@ -57,6 +58,7 @@ class OMVRpcServiceAAOS extends \OMV\Rpc\ServiceAbstract
             "id" => bin2hex(random_bytes(8)),
             "input" => $input,
             "confirmation_token" => $confirm,
+            "safe_pwd" => $safePwd,
         ];
         $line = json_encode($req) . "\n";
 

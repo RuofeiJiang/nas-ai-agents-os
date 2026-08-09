@@ -6,6 +6,7 @@ interface ChatMessage {
   text: string;
   status?: string;
   confirmToken?: string | null;
+  needsPwd?: boolean;
   html?: string;
 }
 
@@ -116,10 +117,15 @@ export class AaosChatPageComponent implements AfterViewInit {
     this.call({ input: action });
   }
 
-  confirm(token: string): void {
+  confirm(token: string, needsPwd: boolean = false): void {
     if (this.loading) return;
+    let safePwd: string | null = null;
+    if (needsPwd) {
+      safePwd = window.prompt('⚠️ 破坏性操作,请输入安全口令:');
+      if (safePwd === null) return;  // 用户取消
+    }
     this.messages.push({ role: 'user', text: '确认执行' });
-    this.call({ confirmation_token: token });
+    this.call({ confirmation_token: token, safe_pwd: safePwd });
   }
 
   private call(params: Record<string, unknown>): void {
@@ -135,7 +141,8 @@ export class AaosChatPageComponent implements AfterViewInit {
           text,
           html: mdToHtml(text),
           status: r.status,
-          confirmToken: r.confirmation_token ?? null
+          confirmToken: r.confirmation_token ?? null,
+          needsPwd: typeof text === 'string' && text.includes('--safe-pwd')
         });
         this.saveHistory();
         this.scrollToBottom();

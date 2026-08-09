@@ -1,27 +1,63 @@
 import net from 'node:net';
 
+interface AaosResponse {
+  status: 'success' | 'error' | 'needs_confirmation';
+  output: string;
+  confirmation_token?: string | null;
+}
+
 /**
- * AAOS 微信桥:把微信消息转发到 AAOS core.sock,把回复发回微信。
- * AAOS Core 无状态(每次 Request 独立处理),不维护多轮对话历史。
+ * AAOS 微信桥:微信消息 -> AAOS core.sock -> 回复发回微信。
+ * 破坏性操作:Core 返回 needs_confirmation(token),用户回复"确认 <安全口令>"执行。
  */
 export class AaosChat {
   private socketPath: string;
   private allowedUsers: Set<string>;
+  private pendingConfirmations = new Map<string, string>(); // userId -> token
 
   constructor(opts: { socketPath?: string; allowedUsers?: string[] }) {
     this.socketPath = opts.socketPath || '/run/aaos/core.sock';
     this.allowedUsers = new Set(opts.allowedUsers || []);
   }
 
-  /** AAOS Core 无状态,无需清理 session */
-  clearSession(_userId: string): void {}
+  clearSession(userId: string): void {
+    this.pendingConfirmations.delete(userId);
+  }
 
   async chat(userId: string, userMessage: string): Promise<string> {
-    // 鉴权:白名单非空时,只允许白名单用户控制 NAS
     if (this.allowedUsers.size > 0 && !this.allowedUsers.has(userId)) {
       return '未授权:你不在此 NAS 的允许列表中。';
     }
 
+    // 破坏性确认:用户回复"确认 <口令>"
+    const confirmMatch = userMessage.match(/^确认\s+(.+)$/);
+    if (confirmMatch) {
+      const pwd = confirmMatch[1].trim();
+      const token = this.pendingConfirmations.get(userId);
+      if (!token) {
+        return '没有待确认的破坏性操作。';
+      }
+      this.pendingConfirmations.delete(userId);
+      try {
+        const resp = await this.request('', token, pwd);
+        return resp.status === 'error' ? `❌ ${resp.output}` : (resp.output || '✅ 已执行');
+      } catch (e) {
+        return `❌ 确认失败: ${e}`;
+      }
+    }
+
+    // 正常请求
+    const resp = await this.request(userMessage, null, null);
+    if (resp.status === 'needs_confirmation') {
+      if (resp.confirmation_token) {
+        this.pendingConfirmations.set(userId, resp.confirmation_token);
+      }
+      return `⚠️ 破坏性操作,需安全口令确认:\n${resp.output}\n\n回复"确认 <安全口令>"执行(如:确认 mypass)`;
+    }
+    return resp.status === 'error' ? `❌ ${resp.output}` : (resp.output || '(AAOS 无回复)');
+  }
+
+  private request(input: string, confirmToken: string | null, safePwd: string | null): Promise<AaosResponse> {
     return new Promise((resolve, reject) => {
       const sock = net.createConnection(this.socketPath);
       const id = Date.now().toString() + Math.random().toString(36).slice(2, 8);
@@ -29,12 +65,13 @@ export class AaosChat {
         JSON.stringify({
           type: 'request',
           id,
-          input: userMessage,
-          confirmation_token: null,
+          input,
+          confirmation_token: confirmToken,
+          safe_pwd: safePwd,
         }) + '\n';
 
       let buf = '';
-      sock.setTimeout(60_000); // AAOS LLM 调度可能慢
+      sock.setTimeout(60_000);
 
       sock.on('connect', () => sock.write(req));
       sock.on('data', (data) => {
@@ -42,14 +79,7 @@ export class AaosChat {
         if (buf.includes('\n')) {
           sock.end();
           try {
-            const resp = JSON.parse(buf.trim());
-            if (resp.status === 'needs_confirmation') {
-              resolve(`⚠️ 破坏性操作,需确认:\n${resp.output}\n\n(微信暂不支持确认,请到 Web UI 操作)`);
-            } else if (resp.status === 'error') {
-              resolve(`❌ ${resp.output}`);
-            } else {
-              resolve(resp.output || '(AAOS 无回复)');
-            }
+            resolve(JSON.parse(buf.trim()) as AaosResponse);
           } catch {
             reject(new Error('解析 AAOS 响应失败: ' + buf.slice(0, 200)));
           }
