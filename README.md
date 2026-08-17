@@ -6,7 +6,7 @@
 
 > 一个 AI 大脑，让你的 NAS 听懂自然语言。
 
-> ⚠️ **项目状态**：开发中 (v0.1.0)。OMV 8 部署已端到端验证可用（见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)）；Docker 打包进行中（未验证）；群晖 / QNAP / TrueNAS / Unraid 等多平台适配规划中。
+> ⚠️ **项目状态**：开发中 (v0.1.0)。OMV 8 已在**虚拟机 + 裸机真机**完成端到端部署验证（Pentium Gold 8505 / 16G / Debian trixie，见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)）；Docker 打包进行中（未验证）；群晖 / QNAP / TrueNAS / Unraid 等多平台适配规划中。
 
 ## 一句话
 
@@ -48,7 +48,7 @@
 
 ## 快速开始
 
-> 当前推荐源码 + systemd 部署（已在 OMV 8 端到端验证）。完整步骤见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)。
+> 当前推荐源码 + systemd 部署（已在 OMV 8 虚拟机 + 裸机真机端到端验证）。完整步骤见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)。
 
 ```bash
 # 1. 构建（需 Rust + musl-tools）
@@ -129,7 +129,7 @@ AAOS 支持微信入口:微信消息 -> AAOS core.sock -> 回复发回微信,用
 
 | NAS 系统 | 适配方式 | 状态 |
 |---------|---------|------|
-| OpenMediaVault 8 | 源码 + systemd / OMV 插件 | ✅ 已验证 |
+| OpenMediaVault 8 | 源码 + systemd / OMV 插件 | ✅ 已验证（VM + 裸机真机） |
 | 任何 Linux + Docker | Docker compose | 🔧 进行中（未验证） |
 | 群晖 / QNAP / TrueNAS / Unraid | Docker | 📋 规划中 |
 
