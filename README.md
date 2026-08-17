@@ -165,6 +165,15 @@ AAOS 支持微信入口:微信消息 -> AAOS core.sock -> 回复发回微信,用
 
 ## 相关
 
+### 理论渊源（AAMAS 学派经典）
+
+本项目的核心问题--agent 的架构化交付--延续了 MAS（多智能体系统）学派的问题意识。LLM 补齐了 1995 年那批工作缺失的通用语言理解与推理能力，使"人人可用的 agent 操作系统"从理论构想变为工程现实：
+
+- Wooldridge M. & Jennings N. R. (1995). *Intelligent Agents: Theory and Practice*. Knowledge Engineering Review. -- agent 概念的经典界定（智能性/自主性/社会性/反应性/主动性）
+- Rao A. S. & Georgeff M. P. (1995). *BDI Agents: From Theory to Practice*. ICMAS-95. -- BDI（信念-愿望-意图）架构，AAOS 的 KB(L1/L2/L3) 与预检/调度/确认机制可视为其在 LLM 时代的工程化对应物
+
+### 作者文章
+
 - [AAOS 论文](https://ruofeijiang.github.io/2026/06/28/aaos-overview/) - AI Agents Operating System 理论
 - [AAOS 自发调度问题](https://ruofeijiang.github.io/2026/07/09/spontaneity-problem/)
 - [AAOS 实现篇](https://ruofeijiang.github.io/2026/07/19/ai-agents-os-implementation/)
