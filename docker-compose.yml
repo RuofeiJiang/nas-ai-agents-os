@@ -1,0 +1,86 @@
+# AAOS-NAS Docker Compose
+# 用法: docker compose up -d
+#
+# 前提:宿主机已装 OMV 8(omv-rpc 需要本地访问)
+# 或: 宿主机是 Debian,OMV 装在另一个容器(网络共享)
+
+version: "3.8"
+
+services:
+  # AAOS Core Agent(LLM 调度)
+  aaos-core:
+    build: .
+    image: aaos-nas/core:latest
+    container_name: aaos-core
+    restart: unless-stopped
+    network_mode: host  # 需访问 localhost 的 omv-rpc / HA / Alist
+    environment:
+      - ARK_API_KEY=${ARK_API_KEY:-}
+      - HA_TOKEN=${HA_TOKEN:-}
+      - ALIST_URL=${ALIST_URL:-http://localhost:5244}
+      - ALIST_USER=${ALIST_USER:-admin}
+      - ALIST_PASS=${ALIST_PASS:-}
+    volumes:
+      - ./config:/etc/aaos          # 配置文件(models.toml/agents.json/kb-*.json)
+      - aaos-data:/var/lib/aaos      # 标签库/photo-tags 等
+      - aaos-log:/var/log/aaos
+      - /srv:/srv:ro                 # NAS 共享目录(只读,写操作走 OMV RPC)
+    depends_on:
+      - aaos-sentinel
+    command: >
+      aaos-core
+      --socket /run/aaos/core.sock
+      --sentinel-socket /run/aaos/sentinel.sock
+
+  # AAOS Sentinel(审计日志)
+  aaos-sentinel:
+    build: .
+    image: aaos-nas/sentinel:latest
+    container_name: aaos-sentinel
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - aaos-log:/var/log/aaos
+    command: >
+      aaos-sentinel
+      --socket /run/aaos/sentinel.sock
+      --log-file /var/log/aaos/sentinel.log
+
+  # 每日巡检(定时)
+  aaos-daily-check:
+    build: .
+    image: aaos-nas/core:latest
+    container_name: aaos-daily-check
+    restart: "no"
+    network_mode: host
+    environment:
+      - ARK_API_KEY=${ARK_API_KEY:-}
+    volumes:
+      - ./config:/etc/aaos
+    command: aaos-cli --daily-check
+
+  # Alist(百度/阿里网盘)
+  alist:
+    image: xhofe/alist:latest
+    container_name: alist
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - alist-data:/opt/alist/data
+
+  # HomeAssistant(智能家居)
+  homeassistant:
+    image: homeassistant/home-assistant:latest
+    container_name: homeassistant
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ha-config:/config
+    environment:
+      - TZ=Asia/Shanghai
+
+volumes:
+  aaos-data:
+  aaos-log:
+  alist-data:
+  ha-config:

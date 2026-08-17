@@ -6,13 +6,13 @@
 #
 set -e
 
-AAOS_DIR="~/nas-ai-agents-os"
-OMV_AAOS_DIR="~/nas-ai-agents-os/omv-plugin"
-VM_IP="${1:-192.168.122.57}"  # 默认 VM,真机改成真机 IP
+AAOS_DIR="$(cd "$(dirname "$0")" && pwd)"
+OMV_AAOS_DIR="${AAOS_DIR}/omv-plugin"
+TARGET_IP="${1:?用法: bash deploy-aaos.sh <目标NAS的IP>}"
 
 echo "=========================================="
 echo "  AAOS-NAS 部署脚本"
-echo "  目标: ${VM_IP}"
+echo "  目标: ${TARGET_IP}"
 echo "=========================================="
 
 # ========== 1. 构建 ==========
@@ -34,18 +34,18 @@ cd dist && tar czf /tmp/aaos-workbench.tar.gz openmediavault-workbench
 echo "    workbench: $(ls -lh /tmp/aaos-workbench.tar.gz | awk '{print $5}')"
 
 # ========== 2. 部署到目标 ==========
-echo ">>> 4. 部署到 ${VM_IP}"
+echo ">>> 4. 部署到 ${TARGET_IP}"
 
 # 创建远程目录
-ssh -o StrictHostKeyChecking=no root@${VM_IP} 'mkdir -p /etc/aaos /var/lib/aaos /var/log/aaos'
+ssh -o StrictHostKeyChecking=no root@${TARGET_IP} 'mkdir -p /etc/aaos /var/lib/aaos /var/log/aaos'
 
 # Rust 二进制
 scp -o StrictHostKeyChecking=no \
     ${AAOS_DIR}/target/x86_64-unknown-linux-musl/release/aaos-core \
     ${AAOS_DIR}/target/x86_64-unknown-linux-musl/release/aaos-sentinel \
     ${AAOS_DIR}/target/x86_64-unknown-linux-musl/release/aaos-cli \
-    root@${VM_IP}:/usr/local/bin/
-ssh root@${VM_IP} 'chmod +x /usr/local/bin/aaos-*'
+    root@${TARGET_IP}:/usr/local/bin/
+ssh root@${TARGET_IP} 'chmod +x /usr/local/bin/aaos-*'
 
 # 配置文件
 scp -o StrictHostKeyChecking=no \
@@ -54,13 +54,13 @@ scp -o StrictHostKeyChecking=no \
     ${AAOS_DIR}/kb-context.json \
     ${AAOS_DIR}/kb-tasks.json \
     ${AAOS_DIR}/kb-nas.json \
-    root@${VM_IP}:/etc/aaos/
+    root@${TARGET_IP}:/etc/aaos/
 
 # env 文件(如果远程没有)
-ssh root@${VM_IP} 'test -f /etc/aaos/env || echo "# AAOS 环境变量(部署后填)" > /etc/aaos/env; chmod 600 /etc/aaos/env'
+ssh root@${TARGET_IP} 'test -f /etc/aaos/env || echo "# AAOS 环境变量(部署后填)" > /etc/aaos/env; chmod 600 /etc/aaos/env'
 
 # systemd 服务
-ssh root@${VM_IP} 'cat > /etc/systemd/system/aaos-sentinel.service << "EOF"
+ssh root@${TARGET_IP} 'cat > /etc/systemd/system/aaos-sentinel.service << "EOF"
 [Unit]
 Description=AAOS Sentinel - Audit Logger
 After=network.target
@@ -130,18 +130,18 @@ systemctl enable aaos-sentinel aaos-core aaos-daily-check.timer
 # OMV 插件 DEB
 scp -o StrictHostKeyChecking=no \
     ${AAOS_DIR}/openmediavault-aaos_0.1.0-1_all.deb \
-    root@${VM_IP}:/tmp/
-ssh root@${VM_IP} 'dpkg -i /tmp/openmediavault-aaos_0.1.0-1_all.deb 2>&1 | tail -2 || true; apt-get install -f -y 2>&1 | tail -2'
+    root@${TARGET_IP}:/tmp/
+ssh root@${TARGET_IP} 'dpkg -i /tmp/openmediavault-aaos_0.1.0-1_all.deb 2>&1 | tail -2 || true; apt-get install -f -y 2>&1 | tail -2'
 
 # Angular workbench
-scp -o StrictHostKeyChecking=no /tmp/aaos-workbench.tar.gz root@${VM_IP}:/tmp/
-ssh root@${VM_IP} 'cd /var/www/openmediavault && tar xzf /tmp/aaos-workbench.tar.gz --strip-components=1'
+scp -o StrictHostKeyChecking=no /tmp/aaos-workbench.tar.gz root@${TARGET_IP}:/tmp/
+ssh root@${TARGET_IP} 'cd /var/www/openmediavault && tar xzf /tmp/aaos-workbench.tar.gz --strip-components=1'
 
 # 重启服务
-ssh root@${VM_IP} 'systemctl restart openmediavault-engined; sleep 2; systemctl restart aaos-sentinel; sleep 1; systemctl restart aaos-core; sleep 2'
+ssh root@${TARGET_IP} 'systemctl restart openmediavault-engined; sleep 2; systemctl restart aaos-sentinel; sleep 1; systemctl restart aaos-core; sleep 2'
 
 # omv-mkworkbench 补丁:allowed types enum 加 aaosChatPage(OMV 官方脚本不含此类型)
-ssh root@${VM_IP} 'python3 - <<PYEOF
+ssh root@${TARGET_IP} 'python3 - <<PYEOF
 p = "/usr/sbin/omv-mkworkbench"
 s = open(p).read()
 if "aaosChatPage" not in s:
@@ -157,7 +157,7 @@ omv-mkworkbench all'
 
 # ========== 3. 验证 ==========
 echo ">>> 5. 验证"
-ssh root@${VM_IP} '
+ssh root@${TARGET_IP} '
 echo "=== 服务状态 ==="
 systemctl is-active aaos-sentinel aaos-core openmediavault-engined
 

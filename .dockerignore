@@ -1,0 +1,45 @@
+# Build artifacts
+target/
+**/target/
+
+# Node modules
+**/node_modules/
+**/dist/
+**/.angular/
+
+# DEB build
+*.deb
+*.buildinfo
+*.changes
+
+# Secrets
+env
+.env
+*.env
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Docs (太大,不进镜像)
+AAOS-NAS-DOC.md
+DEPLOY-GUIDE.md
+README.md
+
+# OMV plugin (单独部署)
+omv-plugin/
+
+# Old files
+install.sh
+rules.json
+params.json
+
+# Plans
+PLAN*.md
+
+# QEMU
+*.qcow2

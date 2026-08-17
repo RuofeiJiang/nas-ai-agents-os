@@ -1,44 +1,122 @@
 {
-  "nas_name": "AAOS-NAS",
-  "description": "基于 OMV 8 的 AI NAS,Core Agent 调度 Execution Agent 管理",
-  "hardware": {
-    "cpu": "AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx",
-    "cores": 4,
-    "ram_gb": 4,
-    "disks": [
-      {"device": "/dev/vda", "size": "20GB", "role": "系统盘(OMV + AAOS)"},
-      {"device": "/dev/vdb", "size": "5GB", "role": "数据盘(共享文件夹)"}
-    ],
-    "gpu": "Radeon Vega Mobile(可接 HDMI,后期 Kodi/Batocera)"
-  },
-  "directories": {
-    "shared_folders": [
-      {"name": "testshare", "device": "/dev/vdb1", "fs": "ext4", "mount": "/srv/dev-disk-by-uuid-05172487-ad4f-4b2d-9915-acb65197da17", "purpose": "测试共享"}
-    ],
-    "photos": "计划在 vdb 上建 photos 共享文件夹,存照片(vision-agent 打标签用)",
-    "media": "计划建 media 共享文件夹,存影音(media-agent 刮削用)",
-    "downloads": "计划建 downloads 共享文件夹(download-agent 用)",
-    "backups": "外接 USB 盘,挂载到 /usb(backup-agent 用)"
-  },
-  "docker_services": [
-    {"name": "homeassistant", "image": "docker.io/homeassistant/home-assistant:latest", "purpose": "智能家居控制(灯/空调/传感器)", "network": "host", "status": "计划中(待 docker-agent 部署)"},
-    {"name": "jellyfin", "image": "docker.io/jellyfin/jellyfin:latest", "purpose": "影音播放服务", "status": "计划中"}
+ "nas_name": "真机NAS",
+ "description": "基于 OMV 8 的 AI NAS,Core Agent 调度 Execution Agent 管理",
+ "hardware": {
+  "cpu": "Intel Pentium Gold 8505 (6核)",
+  "cores": 6,
+  "ram_gb": 16,
+  "disks": [
+   {
+    "device": "/dev/nvme0n1",
+    "size": "238.5G",
+    "role": "系统+数据单盘"
+   }
   ],
-  "backup_strategy": {
-    "method": "rsync 增量",
-    "target": "/usb(外接 USB 盘)",
-    "schedule": "每周日 02:00",
-    "verify": true,
-    "note": "ZFS 快照做本地快照,rsync 到 USB 做离线备份"
-  },
-  "omv": {
-    "version": "8.5.5-1 (Synchrony)",
-    "base": "Debian 13 trixie",
-    "podman": "已装(openmediavault-podman 插件)"
-  },
-  "aaos": {
-    "core_model": "deepseek-v4-pro-260425(火山 coding plan)",
-    "vision_model": "doubao-1.5-vision-pro-250328(后期照片打标签)",
-    "agents": ["system-agent(已实现)", "docker-agent(计划)", "filesystem-agent(计划)", "vision-agent(计划)", "media-agent(计划)", "download-agent(计划)", "backup-agent(计划)"]
+  "gpu": "Intel UHD Graphics(核显)"
+ },
+ "directories": {
+  "shared_folders": [
+   {
+    "name": "media",
+    "device": "/dev/sdb1",
+    "fs": "ext4",
+    "mount": "/srv/<media盘UUID>",
+    "purpose": "媒体库(10T,media-agent 刮削用)"
+   },
+   {
+    "name": "downloads",
+    "device": "/dev/sdc1",
+    "fs": "ext4",
+    "mount": "/srv/<downloads盘UUID>",
+    "purpose": "下载(6T,download-agent 落盘处)"
+   },
+   {
+    "name": "backup",
+    "device": "/dev/sda1",
+    "fs": "ext4",
+    "mount": "/srv/<backup盘UUID>",
+    "purpose": "备份(4T,backup-agent 目标)"
+   }
+  ],
+  "appdata": {
+   "path": "/srv/<downloads盘UUID>/appdata",
+   "purpose": "容器持久配置(qbit/alist/ha 子目录)",
+   "disk": "6T downloads 盘"
   }
+ },
+ "docker_services": [
+  {
+   "name": "qbit",
+   "image": "docker.m.daocloud.io/linuxserver/qbittorrent:latest",
+   "purpose": "BT/磁力下载(download-agent 后端)",
+   "network": "host",
+   "port": 8080,
+   "status": "running",
+   "data": "/srv/<downloads盘UUID>/appdata/qbit",
+   "credentials_env": [
+    "QBIT_HOST",
+    "QBIT_USER",
+    "QBIT_PASS"
+   ]
+  },
+  {
+   "name": "alist",
+   "image": "docker.m.daocloud.io/xhofe/alist:latest",
+   "purpose": "网盘聚合(cloud-agent 后端)",
+   "network": "host",
+   "port": 5244,
+   "status": "running",
+   "data": "/srv/<downloads盘UUID>/appdata/alist",
+   "credentials_env": [
+    "ALIST_URL",
+    "ALIST_USER",
+    "ALIST_PASS"
+   ]
+  },
+  {
+   "name": "homeassistant",
+   "image": "docker.m.daocloud.io/homeassistant/home-assistant:latest",
+   "purpose": "智能家居(ha-agent 后端)",
+   "network": "host",
+   "privileged": true,
+   "port": 8123,
+   "status": "running(待初始化向导+新HA_TOKEN)",
+   "data": "/srv/<downloads盘UUID>/appdata/ha",
+   "credentials_env": [
+    "HA_TOKEN"
+   ]
+  }
+ ],
+ "backup_strategy": {
+  "method": "rsync 增量",
+  "target": "/usb(外接 USB 盘)",
+  "schedule": "每周日 02:00",
+  "verify": true,
+  "note": "ZFS 快照做本地快照,rsync 到 USB 做离线备份"
+ },
+ "omv": {
+  "version": "8.5.5-1 (Synchrony)",
+  "base": "Debian 13 trixie",
+  "podman": "已装(openmediavault-podman 插件)"
+ },
+ "aaos": {
+  "core_model": "deepseek-v4-pro-260425(火山 coding plan)",
+  "vision_model": "doubao-1.5-vision-pro-250328(后期照片打标签)",
+  "agents": [
+   "system-agent(已实现)",
+   "docker-agent(计划)",
+   "filesystem-agent(计划)",
+   "vision-agent(计划)",
+   "media-agent(计划)",
+   "download-agent(计划)",
+   "backup-agent(计划)"
+  ]
+ },
+ "docker_conventions": {
+  "registry_mirror": "docker.m.daocloud.io(Docker Hub/ghcr.io 直连被墙,podman pull 必须用镜像源前缀)",
+  "restart_policy": "unless-stopped + podman-restart.service 已启用",
+  "timezone": "Asia/Shanghai",
+  "puid_pguid": "1000/1000",
+  "note": "qbit WebUI 密码已对齐 env;alist admin 密码已对齐 env"
+ }
 }

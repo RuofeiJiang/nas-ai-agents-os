@@ -6,7 +6,27 @@
 
 > 一个 AI 大脑，让你的 NAS 听懂自然语言。
 
-> ⚠️ **项目状态**：开发中 (v0.1.0)。OMV 8 已在**虚拟机 + 裸机真机**完成端到端部署验证（Pentium Gold 8505 / 16G / Debian trixie，见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)）；Docker 打包进行中（未验证）；群晖 / QNAP / TrueNAS / Unraid 等多平台适配规划中。
+> ⚠️ **项目状态**：开发中 (v0.1.0)。OMV 8 已在**虚拟机 + 裸机真机**完成端到端部署验证（Pentium Gold 8505 / 16G / Debian trixie，见 [DEPLOY-GUIDE.md](DEPLOY-GUIDE.md)）；真机已完成**存储落地（3×HDD ext4 + 共享）+ 后端服务容器化（qBittorrent / Alist / Home Assistant）**；Docker 打包进行中（未验证）；群晖 / QNAP / TrueNAS / Unraid 等多平台适配规划中。
+
+## 真机落地记录（2026-08-17）
+
+裸机（Pentium Gold 8505 / 16G / 238G NVMe 系统盘）存储与服务现状：
+
+| 层 | 内容 |
+|---|---|
+| 存储 | 3 块群晖拆机盘（4T/10T/6T）转 ext4 独立盘，不做 RAID |
+| 共享 | `media`(10T) / `downloads`(6T) / `backup`(4T) |
+| 容器 | qBittorrent(8080) / Alist(5244) / Home Assistant(8123, host+privileged)，配置集中于 downloads 盘 `appdata/`，`podman-restart.service` 开机自启 |
+| KB | 以上事实（挂载点/镜像/端口/凭据 env/镜像源约定）已写入 `kb-context.json`（L2），Core 调度可直接感知 |
+
+**踩坑记录**（对二次部署直接有用）：
+
+1. **OMV RPC 异步任务不能并发跑同一块盘**：`DiskMgmt.wipe` / `FileSystemMgmt.create` 都是后台任务（返回 bgstatus 路径），两批并发写同一块盘会把 GPT 写坏（`partx: failed to read partition table`）。必须串行 + 轮询 bgstatus 完成后再下一块。
+2. **OMV 8 新建对象的魔法 UUID 因机而异**：`ShareMgmt.set` 新建时 uuid 要填本机 `/etc/default/openmediavault` 里的 `OMV_CONFIGOBJECT_NEW_UUID`（本机为 `fa4b1c66-ef79-11e5-87a0-0002b3a176b4`），不是网上流传的 `fa4bbae1-...`，填错报 XPath 查询失败。
+3. **OMV 8 RPC 参数按 schema 全量校验**：如 `DiskMgmt.wipe` 必须带 `secure` 字段，缺了直接抛 SchemaValidationException。参数签名以 `/usr/share/openmediavault/datamodels/rpc.*.json` 为准。
+4. **国内网络拉镜像必须走镜像源**：Docker Hub（connection reset）与 ghcr.io（403）直连均不可用，统一用 `docker.m.daocloud.io` 前缀（ghcr 仓库在 Hub 侧多有官方同步，如 `homeassistant/home-assistant`）。
+5. **`models.toml` 只认 `api_key_env`，不认内联 `api_key`**：LLM 客户端（`src/llm.rs:23`）只从环境变量取 key，toml 里写 `api_key="..."` 会被静默忽略、请求无 Authorization -> 401。且 `core.rs` 的 `if let Ok(Some(raw))` 会吞掉 Err 不打日志，表现为「无法理解意图」而非鉴权错误——排障时先看 journal。
+
 
 ## 一句话
 
