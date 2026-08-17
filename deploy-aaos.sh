@@ -138,7 +138,22 @@ scp -o StrictHostKeyChecking=no /tmp/aaos-workbench.tar.gz root@${VM_IP}:/tmp/
 ssh root@${VM_IP} 'cd /var/www/openmediavault && tar xzf /tmp/aaos-workbench.tar.gz --strip-components=1'
 
 # 重启服务
-ssh root@${VM_IP} 'systemctl restart openmediavault-engined; sleep 2; systemctl restart aaos-sentinel; sleep 1; systemctl restart aaos-core; sleep 2; omv-mkworkbench all 2>/dev/null || true'
+ssh root@${VM_IP} 'systemctl restart openmediavault-engined; sleep 2; systemctl restart aaos-sentinel; sleep 1; systemctl restart aaos-core; sleep 2'
+
+# omv-mkworkbench 补丁:allowed types enum 加 aaosChatPage(OMV 官方脚本不含此类型)
+ssh root@${VM_IP} 'python3 - <<PYEOF
+p = "/usr/sbin/omv-mkworkbench"
+s = open(p).read()
+if "aaosChatPage" not in s:
+    old = chr(39)+"type" + chr(39) + ": {" + chr(39)+"type"+chr(39) + ": " + chr(39)+"string"+chr(39) + ", " + chr(39)+"enum"+chr(39) + ": [\n                    " + chr(39)+"blankPage"+chr(39) + ","
+    new = chr(39)+"type" + chr(39) + ": {" + chr(39)+"type"+chr(39) + ": " + chr(39)+"string"+chr(39) + ", " + chr(39)+"enum"+chr(39) + ": [\n                    " + chr(39)+"aaosChatPage"+chr(39) + ",\n                    " + chr(39)+"blankPage"+chr(39) + ","
+    assert old in s, "omv-mkworkbench 结构变了,请手工检查 component type enum"
+    open(p, "w").write(s.replace(old, new, 1))
+    print("omv-mkworkbench 已打 aaosChatPage 补丁")
+else:
+    print("omv-mkworkbench 补丁已存在")
+PYEOF
+omv-mkworkbench all'
 
 # ========== 3. 验证 ==========
 echo ">>> 5. 验证"
