@@ -44,7 +44,7 @@ wget -O - https://get.openmediavault.io | sh
 在**开发机**(当前这台,有源码的)上执行:
 
 ```bash
-cd ~/truenas-aaos
+cd ~/nas-ai-agents-os
 
 # 部署到真机(改 IP)
 bash deploy-aaos.sh <真机IP>

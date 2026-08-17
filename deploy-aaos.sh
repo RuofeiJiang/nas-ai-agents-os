@@ -23,9 +23,9 @@ cargo build --release --target x86_64-unknown-linux-musl 2>&1 | tail -2
 echo "    二进制: $(ls -lh target/x86_64-unknown-linux-musl/release/aaos-* | wc -l) 个"
 
 echo ">>> 2. 构建 OMV 插件 DEB"
-cd "${OMV_AAOS_DIR}/openmediavault-aaos"
+cd "${OMV_AAOS_DIR}"
 dpkg-buildpackage -us -uc -b 2>&1 | tail -2
-echo "    DEB: $(ls -lh ${OMV_AAOS_DIR}/openmediavault-aaos_*.deb | awk '{print $5}')"
+echo "    DEB: $(ls -lh ${AAOS_DIR}/openmediavault-aaos_*.deb | awk '{print $5}')"
 
 echo ">>> 3. 构建 Angular workbench"
 cd "${OMV_AAOS_DIR}/workbench"
@@ -129,7 +129,7 @@ systemctl enable aaos-sentinel aaos-core aaos-daily-check.timer
 
 # OMV 插件 DEB
 scp -o StrictHostKeyChecking=no \
-    ${OMV_AAOS_DIR}/openmediavault-aaos_0.1.0-1_all.deb \
+    ${AAOS_DIR}/openmediavault-aaos_0.1.0-1_all.deb \
     root@${VM_IP}:/tmp/
 ssh root@${VM_IP} 'dpkg -i /tmp/openmediavault-aaos_0.1.0-1_all.deb 2>&1 | tail -2 || true; apt-get install -f -y 2>&1 | tail -2'
 

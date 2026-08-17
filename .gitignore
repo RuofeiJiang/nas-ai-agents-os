@@ -45,3 +45,10 @@ omv-plugin/openmediavault-aaos/debian/openmediavault-aaos.substvars
 omv-plugin/*.deb
 omv-plugin/*.buildinfo
 omv-plugin/*.changes
+
+# OMV 插件 DEB 构建产物
+omv-plugin/debian/debhelper-build-stamp
+omv-plugin/debian/files
+omv-plugin/debian/openmediavault-aaos.substvars
+omv-plugin/debian/openmediavault-aaos/
+omv-plugin/*.deb
