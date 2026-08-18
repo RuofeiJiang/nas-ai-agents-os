@@ -116,7 +116,10 @@
   "registry_mirror": "docker.m.daocloud.io(Docker Hub/ghcr.io 直连被墙,podman pull 必须用镜像源前缀)",
   "restart_policy": "unless-stopped + podman-restart.service 已启用",
   "timezone": "Asia/Shanghai",
-  "puid_pguid": "1000/1000",
-  "note": "qbit WebUI 密码已对齐 env;alist admin 密码已对齐 env"
+  "puid_pguid": "1000/1000(bing)",
+  "note": "qbit WebUI 密码已对齐 env;alist admin 密码已对齐 env",
+  "web_ui": {
+   "cockpit": "https://<NAS_IP>:9090(系统账号登录,左侧Podman菜单;AAOS部署脚本自带安装)"
+  }
  }
 }

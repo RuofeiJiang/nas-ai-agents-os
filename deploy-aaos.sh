@@ -39,6 +39,21 @@ echo ">>> 4. 部署到 ${TARGET_IP}"
 # 创建远程目录
 ssh -o StrictHostKeyChecking=no root@${TARGET_IP} 'mkdir -p /etc/aaos /var/lib/aaos /var/log/aaos'
 
+# 容器运行时 + Web 管理端(podman 官方配套 cockpit;幂等,装过就跳过)
+echo ">>> 4.1 安装 podman + cockpit(容器管理端 :9090)"
+ssh root@${TARGET_IP} '
+need=""
+for p in podman cockpit cockpit-podman; do
+    dpkg -s $p >/dev/null 2>&1 || need="$need $p"
+done
+if [ -n "$need" ]; then
+    apt-get install -y $need 2>&1 | tail -1
+else
+    echo "    已安装,跳过"
+fi
+systemctl enable --now podman-restart.service cockpit.socket 2>/dev/null | tail -1
+'
+
 # Rust 二进制
 scp -o StrictHostKeyChecking=no \
     ${AAOS_DIR}/target/x86_64-unknown-linux-musl/release/aaos-core \
@@ -177,6 +192,7 @@ echo "  部署完成!"
 echo "  Web UI: http://$(hostname -I | awk "{print \$1}")/"
 echo "  登录: admin / <你的OMV密码>"
 echo "  菜单: Services > AAOS"
+echo "  容器管理: https://$(hostname -I | awk "{print \$1}"):9090 (cockpit,系统账号登录,左侧 Podman 菜单)"
 echo ""
 echo "  下一步:"
 echo "  1. 浏览器开 Web UI -> Services > AAOS -> 设置"
