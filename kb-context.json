@@ -120,6 +120,16 @@
   "note": "qbit WebUI 密码已对齐 env;alist admin 密码已对齐 env",
   "web_ui": {
    "cockpit": "https://<NAS_IP>:9090(系统账号登录,左侧Podman菜单;AAOS部署脚本自带安装)"
+  },
+  "pt_tuning": {
+   "listen_port": 52341,
+   "port_forward": "路由器需把 TCP+UDP 52341 映射到 NAS,否则不可连接:peer 只出不进(2021做种只连2个的原因),上传/保种受限",
+   "mechanism": "私有种子禁 PEX/DHT,peer 仅来自 tracker announce(每次约50个);可连接后入站 peer 自然增长",
+   "checklist": [
+    "路由器端口映射 52341",
+    "qbit 监听端口非 6881 等被封端口",
+    "pt-watchdog 自愈+告警在位"
+   ]
   }
  }
 }
