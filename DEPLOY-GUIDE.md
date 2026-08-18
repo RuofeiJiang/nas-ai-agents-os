@@ -132,6 +132,35 @@ apt install -y qbittorrent-nox ffmpeg
 # 配 QBIT_HOST/QBIT_USER/QBIT_PASS 到 /etc/aaos/env
 ```
 
+## 第九步:存储与 SMB 共享
+
+裸盘 -> 文件系统 -> 共享文件夹 -> **SMB 导出 + 授权 + SMB 密码**。
+注意:建了共享文件夹 ≠ 能 SMB 访问,后面三件不做客户端连不上(踩过:共享可见但登录失败)。
+
+```bash
+NEW=$(grep OMV_CONFIGOBJECT_NEW_UUID /etc/default/openmediavault | cut -d'"' -f2)
+
+# 1. 擦盘+建文件系统(必须串行!并发跑同一块盘会把 GPT 写坏)
+omv-rpc "DiskMgmt" "wipe" '{"devicefile":"/dev/sdX","type":"quick","secure":false}'   # 异步,等 /tmp/bgstatus* 里 running:false
+omv-rpc "FileSystemMgmt" "create" '{"devicefile":"/dev/disk/by-id/<wwn>","type":"ext4"}' # 异步,同上
+omv-rpc "FileSystemMgmt" "setMountPoint" '{"id":"<fs-uuid>","usagewarnthreshold":85}'
+
+# 2. 共享文件夹(uuid 必须用本机魔法 UUID,见 NEW)
+omv-rpc "ShareMgmt" "set" "{\"uuid\":\"$NEW\",\"name\":\"media\",\"reldirpath\":\"media\",\"comment\":\"媒体\",\"mntentref\":\"<mountpoint-uuid>\"}"
+
+# 3. SMB 导出(参数按服务端 schema 全量给,缺字段直接抛 SchemaValidationException)
+omv-rpc "SMB" "setShare" "{\"uuid\":\"$NEW\",\"enable\":true,\"sharedfolderref\":\"<sf-uuid>\",\"comment\":\"media\",\"guest\":\"no\",\"readonly\":false,...}"
+# 省力法:从 /usr/share/openmediavault/datamodels/rpc.smb.json 的 properties 按类型生成默认值再覆盖关键字段
+
+# 4. 授权 + SMB 密码(passdb 不建,登录必失败--pdbedit -L 应显示用户)
+omv-rpc "ShareMgmt" "setPrivileges" '{"uuid":"<sf-uuid>","privileges":[{"name":"<user>","perms":7,"type":"user"}]}'
+omv-rpc "UserMgmt" "setUser" '{"name":"<user>","password":"<pwd>","groups":[...],"sshpubkeys":[],...}'
+omv-rpc "Config" "applyChanges" '{"modules":[],"force":false}'
+
+# 验证
+smbclient -L //127.0.0.1 -U '<user>%<pwd>'   # 应列出共享
+```
+
 ## 验证清单
 
 - [ ] `aaos-cli 系统信息` 秒回(快速回复)
@@ -143,8 +172,19 @@ apt install -y qbittorrent-nox ffmpeg
 - [ ] `aaos-cli 分析系统有没有异常` LLM 智能分析通
 - [ ] 重启真机 -> core/sentinel 自启
 - [ ] 每日巡检 timer active
+- [ ] `smbclient -L //127.0.0.1 -U '<user>%<pwd>'` 列出共享并能 `ls`
 
 ## 常见问题
+
+### OMV RPC 报 Missing 'required' attribute / 值类型不符
+OMV 8 的 RPC 参数按 schema 全量校验,且不同方法要求的字段比想象多(setShare 要 recyclemaxage、setUser 要 disallowusermod/sshpubkeys)。
+通用解法:读 `/usr/share/openmediavault/datamodels/rpc.<service>.json` 的 properties,按类型(boolean/array/enum/integer/string)生成默认值,再覆盖业务字段。
+
+### 新建对象报 XPath 查询失败
+新建配置对象的 uuid 要用本机 `/etc/default/openmediavault` 里的 `OMV_CONFIGOBJECT_NEW_UUID`(每台机器不同),不是网上流传的固定值。
+
+### SMB 登录失败(共享可见但拒绝访问)
+`pdbedit -L` 为空 = 没建 SMB 账号,走上面第九步的 UserMgmt.setUser。
 
 ### OMV 安装失败
 - 确认 Debian 版本是 trixie(`cat /etc/os-release`)
