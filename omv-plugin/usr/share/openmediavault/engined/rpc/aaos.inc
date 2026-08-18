@@ -32,6 +32,35 @@ class OMVRpcServiceAAOS extends \OMV\Rpc\ServiceAbstract
         $this->registerMethod("status");
         $this->registerMethod("getConfig");
         $this->registerMethod("setConfig");
+        $this->registerMethod("getInbox");
+    }
+
+    /// AAOS 收件箱(服务器侧主动消息,如看门狗告警;微信桥等也写这里)
+    const INBOX_PATH = "/var/lib/aaos/inbox.jsonl";
+
+    /**
+     * 读收件箱:返回 id > since 的消息(升序)。
+     * params: {since: number} 上次已读的最大 id,缺省 0。
+     * 消息来源:pt-watchdog 等服务器侧守护进程追加的 JSONL 行 {id, time, title, text}。
+     */
+    public function getInbox($params, $context)
+    {
+        $this->validateMethodContext($context, [
+            "role" => OMV_ROLE_ADMINISTRATOR
+        ]);
+        $since = intval($params['since'] ?? 0);
+        $items = [];
+        if (file_exists(self::INBOX_PATH)) {
+            foreach (file(self::INBOX_PATH, FILE_IGNORE_NEW_LINES) as $line) {
+                if (trim($line) === '') continue;
+                $obj = json_decode($line, true);
+                if (!is_array($obj) || !isset($obj['id'])) continue;
+                if ($obj['id'] > $since) {
+                    $items[] = $obj;
+                }
+            }
+        }
+        return ["items" => $items];
     }
 
     /**

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
 import { RpcService } from '~/app/shared/services/rpc.service';
 
 interface ChatMessage {
@@ -54,7 +54,7 @@ function mdToHtml(md: string): string {
   templateUrl: './aaos-chat-page.component.html',
   styleUrls: ['./aaos-chat-page.component.scss']
 })
-export class AaosChatPageComponent implements AfterViewInit {
+export class AaosChatPageComponent implements AfterViewInit, OnDestroy {
   messages: ChatMessage[] = [];
   input = '';
   loading = false;
@@ -69,6 +69,10 @@ export class AaosChatPageComponent implements AfterViewInit {
   // 快捷操作
   quickActions = ['系统信息', '列出磁盘', '列出共享', '列出容器', 'HA设备', '应用配置'];
 
+  // 收件箱轮询(服务器侧主动消息:看门狗告警等)
+  private inboxTimer: any = null;
+  private lastInboxId = 0;
+
   constructor(private rpcService: RpcService, private el: ElementRef) {
     // 加载历史(localStorage)
     try {
@@ -76,11 +80,38 @@ export class AaosChatPageComponent implements AfterViewInit {
       if (saved) {
         this.messages = JSON.parse(saved);
       }
+      this.lastInboxId = Number(localStorage.getItem('aaos-inbox-last-id') || 0);
     } catch (e) { /* ignore */ }
   }
 
   ngAfterViewInit(): void {
     this.scrollToBottom();
+    this.pollInbox();  // 打开页面立即查一次
+    this.inboxTimer = setInterval(() => this.pollInbox(), 30000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.inboxTimer) clearInterval(this.inboxTimer);
+  }
+
+  private pollInbox(): void {
+    this.rpcService.request('AAOS', 'getInbox', { since: this.lastInboxId })
+      .subscribe({
+        next: (res: any) => {
+          const items = res?.response?.items ?? res?.items ?? [];
+          for (const it of items) {
+            this.lastInboxId = Math.max(this.lastInboxId, it.id);
+            const text = `📢 **${it.title ?? '通知'}**\n${it.text ?? ''}`;
+            this.messages.push({ role: 'assistant', text, html: mdToHtml(text) });
+          }
+          if (items.length > 0) {
+            localStorage.setItem('aaos-inbox-last-id', String(this.lastInboxId));
+            this.saveHistory();
+            this.scrollToBottom();
+          }
+        },
+        error: () => { /* 静默,收件箱不可用不影响聊天 */ }
+      });
   }
 
   private saveHistory(): void {
