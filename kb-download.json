@@ -1,0 +1,98 @@
+{
+ "domain": "下载管理(qBittorrent WebUI API + PT 运维)",
+ "source": "手动整理(2026-08-18,真机部署经验)",
+ "base_url_env": "QBIT_HOST",
+ "auth": {
+  "type": "login",
+  "token_env": "QBIT_USER",
+  "login_url": "/api/v2/auth/login",
+  "note": "form-urlencoded username=QBIT_USER password=QBIT_PASS,响应 Set-Cookie SID"
+ },
+ "actions": {
+  "list_torrents": {
+   "method": "GET",
+   "path": "/api/v2/torrents/info",
+   "params": [],
+   "description": "列出所有种子(含状态/进度/速度)"
+  },
+  "torrent_trackers": {
+   "method": "GET",
+   "path": "/api/v2/torrents/trackers",
+   "params": [
+    {
+     "name": "hash",
+     "type": "string",
+     "required": true,
+     "location": "query"
+    }
+   ],
+   "description": "查种子 tracker 状态(msg 字段是排障第一现场)"
+  },
+  "add_magnet": {
+   "method": "POST",
+   "path": "/api/v2/torrents/add",
+   "params": [
+    {
+     "name": "urls",
+     "type": "string",
+     "required": true,
+     "location": "body"
+    }
+   ],
+   "description": "添加磁力/种子 URL"
+  },
+  "pause": {
+   "method": "POST",
+   "path": "/api/v2/torrents/pause",
+   "params": [
+    {
+     "name": "hashes",
+     "type": "string",
+     "required": true,
+     "location": "body"
+    }
+   ],
+   "description": "暂停种子"
+  },
+  "resume": {
+   "method": "POST",
+   "path": "/api/v2/torrents/resume",
+   "params": [
+    {
+     "name": "hashes",
+     "type": "string",
+     "required": true,
+     "location": "body"
+    }
+   ],
+   "description": "恢复种子"
+  },
+  "reannounce": {
+   "method": "POST",
+   "path": "/api/v2/torrents/reannounce",
+   "params": [
+    {
+     "name": "hashes",
+     "type": "string",
+     "required": true,
+     "location": "body"
+    }
+   ],
+   "description": "强制重新announce--qbit 周期性掉线不重连的标准解法"
+  }
+ },
+ "notes": {
+  "storage": "下载落盘 /srv/<downloads盘UUID>/downloads(OMV 共享 downloads,6T盘)",
+  "webui": "http://<NAS_IP>:8080 admin/QBIT_PASS",
+  "listen_port": "52341(6881 被 PT 站拉黑,禁用)",
+  "upnp": "已开,路由器自动映射 52341 TCP/UDP,可连接状态",
+  "watchdog": "pt-watchdog.timer 每分钟扫:卡种先自动 reannounce(每5分钟),救不活告警进 /var/lib/aaos/inbox.jsonl",
+  "failure_modes": {
+   "port_blacklisted": "tracker msg 含 blacklist->改监听端口",
+   "account_restricted": "msg 含 Only FREE->站规,无解",
+   "dead_torrent": "num_seeds=0->死种",
+   "nat_deadlock": "tracker 正常 0 peer 且不可连接->等 UPnP 生效或换资源"
+  },
+  "pt_account": "海盗湾(haidan.cc)疑似长期未登录被限制,只能下 FREE 种"
+ }
+}
