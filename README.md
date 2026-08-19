@@ -16,7 +16,9 @@
 |---|---|
 | 存储 | 3 块群晖拆机盘（4T/10T/6T）转 ext4 独立盘，不做 RAID |
 | 共享 | `media`(10T) / `downloads`(6T) / `backup`(4T) |
-| 容器 | qBittorrent(8080) / Alist(5244) / Home Assistant(8123, host+privileged)，配置集中于 downloads 盘 `appdata/`，`podman-restart.service` 开机自启 |
+| 容器 | qBittorrent(8080) / Alist(5244) / Home Assistant(8123, host+privileged) / Jellyfin(8096)，配置集中于 downloads 盘 `appdata/`，`podman-restart.service` 开机自启 |
+| 影视链路 | `media/{movies,tv,anime}` 媒体树 + Jellyfin 展示端；下载完成的资源由 [media-organizer](scripts/media-organizer.py) 自动软链归位（跨盘不破坏做种） |
+| SMB | media/downloads/backup 三共享已导出+授权+passdb，`bing` 账号可读写访问 |
 | KB | 以上事实（挂载点/镜像/端口/凭据 env/镜像源约定）已写入 `kb-context.json`（L2），Core 调度可直接感知 |
 
 **踩坑记录**（对二次部署直接有用）：
@@ -133,11 +135,13 @@ AAOS 支持微信入口:微信消息 -> AAOS core.sock -> 回复发回微信,用
 
 见 [wechat-bridge/](wechat-bridge/)。
 
-## 非LLM自发性:看门狗实证(pt-watchdog)
+## 非LLM自发性:两个实证(pt-watchdog / media-organizer)
 
-[scripts/pt-watchdog.py](scripts/pt-watchdog.py) 是一个**零 LLM** 的自发行为组件,也是本项目的核心论点的一个实证:**自发性调度源自架构,而非 LLM**。
+自发性调度源自架构,而非 LLM--这是本项目的核心论点。目前有两个**零 LLM** 的自发行为组件作实证,恰好覆盖两种触发范式:
 
-它无人触发地运行着完整的 agent 循环--感知、决策、行动、报告:
+### 实证一:pt-watchdog(时钟驱动)
+
+[scripts/pt-watchdog.py](scripts/pt-watchdog.py),systemd timer 每分钟扫描,无人触发地运行完整 agent 循环:
 
 ```
 systemd timer(每分钟)          ← 架构赋予的"时钟",自发性的来源
@@ -147,9 +151,23 @@ systemd timer(每分钟)          ← 架构赋予的"时钟",自发性的来源
   └─ 报告:救不活 -> 告警写入收件箱 -> Web 聊天页展示(微信桥复用同一通道)
 ```
 
-这个案例说明:agent 的 agency 由架构交付(timer 驱动的自主循环 + 规则化的诊断知识 + 预置的修复动作 + 统一的通知出口),LLM 并不参与。LLM 在 AAOS 中的角色是语言理解与复杂推理(自然语言调度、结果翻译、读文档动态扩展 agent),两者互补而非等同--**去掉 LLM,自发行为仍在;去掉架构,LLM 只是一个被动的问答机**。
+### 实证二:media-organizer(事件驱动)
 
-> 论文视角:这直接回应 1995 年 MAS 学派未竟的问题--agent 的自主性当时只能存在于理论形式化(BDI)中;AAOS 用架构机制把它工程化交付,LLM 则补上了当年缺失的通用智能内核。详见[理论渊源](#相关)。
+[scripts/media-organizer.py](scripts/media-organizer.py),挂在 qBittorrent 的"下载完成"钩子上,下载完成那一刻自动归位:
+
+```
+qbit 完成钩子(架构事件)        ← 事件源,无需轮询
+  ├─ 感知:新完成的种子(名称/路径/分类)
+  ├─ 决策:纯规则分类--显式分类 > [发布组]→动漫 > SxxExx→剧集 > 中文→电影 > 兜底求助人工
+  ├─ 行动:软链入媒体树(跨盘不破坏做种)
+  └─ 报告:收件箱播报 + 触发 Jellyfin 库扫描
+```
+
+### 论点
+
+两个组件的共同点:agency 由架构交付(触发源 + 规则化知识 + 预置动作 + 统一通知出口),LLM 不参与其中。LLM 在 AAOS 中的角色是语言理解与复杂推理(自然语言调度、结果翻译、读文档动态扩展 agent),两者互补而非等同--**去掉 LLM,自发行为仍在;去掉架构,LLM 只是一个被动的问答机**。
+
+> 论文视角:这直接回应 1995 年 MAS 学派未竟的问题--agent 的自主性当时只能存在于理论形式化(BDI)中;AAOS 用架构机制把它工程化交付(时钟驱动与事件驱动两种范式),LLM 则补上了当年缺失的通用智能内核。详见[理论渊源](#相关)。
 
 ## 核心特性
 
