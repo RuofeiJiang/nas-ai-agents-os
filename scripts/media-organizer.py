@@ -27,10 +27,10 @@ def notify(title, text):
 
 def classify(name, category):
     """规则优先级:显式分类 > 发布组方括号(动漫) > SxxExx/季模式(剧集) > 电影"""
-    if category in ("anime","tv","movie"): return category
+    if category in ("anime","tv","movies"): return category
     if re.search(r"^\s*\[[^\]]+\]", name): return "anime"        # [VCB-Studio]... 发布组开头
     if re.search(r"[Ss]\d{1,2}[Ee]\d{1,2}|\bS\d{2}\b|[Ss]eason", name): return "tv"
-    if re.search(r"[一-鿿]", name): return "movie"       # 含中文默认电影
+    if re.search(r"[一-鿿]", name): return "movies"       # 含中文默认电影
     return None
 
 def jellyfin_scan():
@@ -45,7 +45,7 @@ if not os.path.exists(content):
 cat = classify(name, category)
 if cat is None:
     log("[未分类] " + name)
-    notify("媒体归位:需要人工分类", name + chr(10) + "在 qbit 里设置分类(anime/tv/movie)后重新触发")
+    notify("媒体归位:需要人工分类", name + chr(10) + "在 qbit 里设置分类(anime/tv/movies)后重新触发")
     sys.exit(0)
 
 dest_dir = os.path.join(MEDIA, cat)
