@@ -4,6 +4,29 @@
 
 current = "coding-plan"
 
+# ---- MiniMax Anthropic-compatible(可选;需在 /etc/aaos/env 配 MINIMAX_API_KEY)----
+# M3: 复杂调度/工具循环/视觉基线,1M context; M2.7-highspeed: 文本快速/备用
+[[providers]]
+id = "minimax"
+name = "MiniMax"
+category = "official"
+provider_type = "anthropic"
+base_url = "https://api.minimaxi.com/anthropic"
+api_key_env = "MINIMAX_API_KEY"
+in_failover_queue = true
+
+  [[providers.models]]
+  id = "MiniMax-M3"
+  capabilities = ["text", "vision", "video", "tools"]
+  tags = ["strong", "multimodal", "long-context"]
+  context_window = 1000000
+
+  [[providers.models]]
+  id = "MiniMax-M2.7-highspeed"
+  capabilities = ["text", "tools"]
+  tags = ["fast", "fallback"]
+  context_window = 204800
+
 # ---- 火山方舟 ark coding plan(OpenAI 兼容)----
 [[providers]]
 id = "coding-plan"

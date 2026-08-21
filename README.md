@@ -180,7 +180,7 @@ qbit 完成钩子(架构事件)        ← 事件源,无需轮询
 - **三层知识库**：L1 通用 + L2 系统 + L3 实时状态，准确率 100%（17/17）
   - ⚠️ **KB 分层须知**：预设 agent 的 KB（如 [kb-download.json](kb-download.json)）目前混含两层内容--**通用知识**（API 端点/鉴权流程/故障模式库，如 6881 被 PT 站封禁、reannounce 解法）应随发行版共享；**机器实况**（监听端口/落盘路径/账号状态）属于单机，规范存放地是 `kb-context.json`（部署时按真机配置，见 DEPLOY-GUIDE 第六步），不应从模板继承。后续计划把两者拆分，机器层由部署时的 discover 动作现场生成（与动态 agent 的自动发现同机制）
 - **🔄 动态自扩展**：部署服务自动生成 KB + agent(三档发现:OpenAPI / DRF OPTIONS / LLM 读文档),支持 JWT 登录鉴权,无需写代码
-- **多端接入**：Web UI / CLI / 微信(扫码登录个人微信,经 core.sock)
+- **MiniMax 模型路由**：MiniMax-M3 通过 Anthropic-compatible API 作为复杂工具调度/视觉基线（1M context）；MiniMax-M2.7-highspeed 作为快速文本/备用。协议适配与 fallback 由 LLM 模块统一处理，模型只是可替换认知组件，agency 仍由 AAOS 架构交付。
 
 ## 支持平台
 
@@ -195,7 +195,7 @@ qbit 完成钩子(架构事件)        ← 事件源,无需轮询
 | 层 | 技术 |
 |----|------|
 | Core | Rust (musl 静态编译) |
-| LLM | deepseek-v4-pro (OpenAI 兼容) |
+| LLM | 可插拔 provider；MiniMax-M3(Anthropic-compatible，复杂工具调度/视觉，1M context) + MiniMax-M2.7-highspeed(快速文本/备用)为推荐角色；LLM 是认知模块，agency 由 AAOS 架构交付 |
 | 容器 | Docker |
 | Web UI | Angular（OMV workbench 插件） |
 | 知识库 | JSON 驱动，263 个 NAS 操作 |

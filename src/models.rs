@@ -111,9 +111,11 @@ impl ModelLibrary {
 }
 
 impl Provider {
-    /// 调 `GET {base_url}/models`(OpenAI 兼容)拉模型列表,
-    /// 用启发式补 capabilities/tags。失败返回空 vec(不阻断)。
+    /// 发现模型。OpenAI provider 走 /models；Anthropic-compatible provider 不依赖发现端点，使用配置中的显式模型。
     pub async fn discover_models(&self) -> Result<Vec<Model>> {
+        if self.provider_type.to_lowercase() == "anthropic" {
+            return Ok(self.models.clone());
+        }
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(15))
             .build()?;
@@ -166,7 +168,7 @@ pub fn guess_capabilities(id: &str) -> Vec<String> {
     let vision_patterns = [
         "gpt-4o", "gpt-4.1", "gemini", "claude-3", "claude-sonnet", "claude-opus",
         "qwen-vl", "qwen2-vl", "qwen2.5-vl", "llava", "minicpm-v", "cogvlm", "-vl",
-        "vision", "llama3.2-vision",
+        "vision", "llama3.2-vision", "minimax-m3",
     ];
     if vision_patterns.iter().any(|p| l.contains(p)) {
         caps.push("vision".to_string());
@@ -180,7 +182,7 @@ pub fn guess_tags(id: &str) -> Vec<String> {
     let mut tags = vec![];
     let strong = ["sonnet", "opus", "gpt-4o", "gpt-4.1", "gpt-4", "claude-3.5",
                   "gemini-1.5-pro", "gemini-2", "deepseek-r1", "o1", "o3"];
-    let fast = ["flash", "haiku", "mini", "nano", "small", "8b", "7b", "3b", "tiny"];
+    let fast = ["flash", "haiku", "mini", "nano", "small", "8b", "7b", "3b", "tiny", "highspeed"];
     if strong.iter().any(|p| l.contains(p)) {
         tags.push("strong".to_string());
     }
@@ -212,6 +214,12 @@ mod tests {
         assert!(c.contains(&"vision".to_string()));
         let c = guess_capabilities("llava:13b");
         assert!(c.contains(&"vision".to_string()));
+    }
+
+    #[test]
+    fn guess_minimax_capabilities_and_speed() {
+        assert!(guess_capabilities("MiniMax-M3").contains(&"vision".to_string()));
+        assert!(guess_tags("MiniMax-M2.7-highspeed").contains(&"fast".to_string()));
     }
 
     #[test]

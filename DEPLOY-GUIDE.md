@@ -197,6 +197,7 @@ OMV 8 的 RPC 参数按 schema 全量校验,且不同方法要求的字段比想
 
 ### LLM 报错
 - 确认 ARK_API_KEY 填了(设置页或 /etc/aaos/env)
+- MiniMax 可选:在 `/etc/aaos/env` 设置 `MINIMAX_API_KEY`,并在 `models.toml` 使用 `provider_type = "anthropic"`、`base_url = "https://api.minimaxi.com/anthropic"`;不要把 Anthropic-compatible provider 当成 `/chat/completions`
 - `aaos-cli --test-llm` 测连通性
 
 ### Web UI 不显示 AAOS

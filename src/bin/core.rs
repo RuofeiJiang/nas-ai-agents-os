@@ -274,7 +274,18 @@ async fn handle_request(
 
     // === LLM 调度(规则没匹配的复杂查询)===
     let scheduled = llm::schedule_to_intent(&input, &library).await;
-    if let Ok(Some(raw)) = scheduled {
+    let scheduled = match scheduled {
+        Ok(value) => value,
+        Err(err) => {
+            let provider = &library.core.provider;
+            let model = &library.core.model;
+            tracing::error!("LLM 调度失败 provider={} model={} error={:#}", provider, model, err);
+            send_event(sentinel_socket, EventSource::Ai, Severity::Warning, "ai.llm_error",
+                serde_json::json!({"provider": provider, "model": model, "error": format!("{err:#}")})).await;
+            None
+        }
+    };
+    if let Some(raw) = scheduled {
         // 先试 Plan(多步)
         if let Ok(Some(plan)) = llm::parse_plan(&raw) {
             info!("Core 多步计划: {} 步", plan.steps.len());

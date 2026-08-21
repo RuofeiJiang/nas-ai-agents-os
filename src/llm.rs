@@ -10,12 +10,20 @@ use std::time::Duration;
 use crate::agents::{dispatch, registry_text, ActionResult, Intent, Plan};
 use crate::models::{ModelLibrary, Provider};
 
-/// LLM HTTP 客户端(OpenAI 兼容 chat completions + function calling)
+/// LLM HTTP 客户端。协议差异在此处收敛，Core 只看到文本和工具循环。
 pub struct LlmClient {
     base_url: String,
     api_key: Option<String>,
     model: String,
+    provider_type: String,
     http: reqwest::Client,
+}
+
+#[derive(Debug, Clone)]
+struct ToolCall {
+    id: String,
+    name: String,
+    input: Value,
 }
 
 impl LlmClient {
@@ -31,6 +39,7 @@ impl LlmClient {
             base_url: provider.base_url.clone(),
             api_key,
             model: model.to_string(),
+            provider_type: provider.provider_type.to_lowercase(),
             http: reqwest::Client::builder()
                 .timeout(Duration::from_secs(60))
                 .build()
@@ -38,75 +47,127 @@ impl LlmClient {
         }
     }
 
-    async fn post(&self, body: Value) -> Result<Value> {
+    fn is_anthropic(&self) -> bool {
+        self.provider_type == "anthropic"
+    }
+
+    fn safe_error(&self, text: &str) -> String {
+        let mut safe = text.chars().take(500).collect::<String>()
+            .replace("Bearer ", "Bearer ***");
+        if let Some(key) = &self.api_key {
+            if !key.is_empty() { safe = safe.replace(key, "***"); }
+        }
+        safe
+    }
+
+    async fn post_openai(&self, body: Value) -> Result<Value> {
         let url = format!("{}/chat/completions", self.base_url.trim_end_matches('/'));
         let mut req = self.http.post(&url).json(&body);
-        if let Some(key) = &self.api_key {
-            req = req.bearer_auth(key);
-        }
-        let resp = req
-            .send()
-            .await
-            .with_context(|| format!("POST {url} (model={})", self.model))?;
+        if let Some(key) = &self.api_key { req = req.bearer_auth(key); }
+        let resp = req.send().await.with_context(|| format!("POST {url} (model={})", self.model))?;
         if !resp.status().is_success() {
             let status = resp.status();
-            let text = resp.text().await.unwrap_or_default();
-            // 脱敏:去掉可能的 key/token/bearer
-            let safe_text = text.chars().take(500).collect::<String>()
-                .replace("Bearer ", "Bearer ***")
-                .replace(&std::env::var("ARK_API_KEY").unwrap_or_default(), "***")
-                .replace(&std::env::var("HA_TOKEN").unwrap_or_default(), "***");
-            anyhow::bail!("LLM {url} returned {status}: {safe_text}");
+            anyhow::bail!("LLM provider={} model={} POST {url} returned {status}: {}", self.provider_type, self.model, self.safe_error(&resp.text().await.unwrap_or_default()));
         }
-        let json: Value = resp.json().await.context("decode chat response")?;
-        json.get("choices")
-            .and_then(|c| c.get(0))
-            .and_then(|c| c.get("message"))
-            .cloned()
-            .context("no message in response")
+        let body: Value = resp.json().await.context("decode chat response")?;
+        body.get("choices").and_then(|c| c.get(0)).and_then(|c| c.get("message")).cloned().context("no message in OpenAI response")
+    }
+
+    async fn post_anthropic(&self, body: Value) -> Result<Value> {
+        let url = format!("{}/v1/messages", self.base_url.trim_end_matches('/'));
+        let mut req = self.http.post(&url).json(&body).header("anthropic-version", "2023-06-01");
+        if let Some(key) = &self.api_key { req = req.header("x-api-key", key); }
+        let resp = req.send().await.with_context(|| format!("POST {url} (model={})", self.model))?;
+        if !resp.status().is_success() {
+            let status = resp.status();
+            anyhow::bail!("LLM provider={} model={} POST {url} returned {status}: {}", self.provider_type, self.model, self.safe_error(&resp.text().await.unwrap_or_default()));
+        }
+        resp.json().await.context("decode Anthropic response")
     }
 
     /// 简单单轮(无工具),返回 content。
     pub async fn chat(&self, system: &str, user: &str) -> Result<String> {
-        let body = json!({"model": self.model, "messages": [{"role":"system","content":system},{"role":"user","content":user}], "temperature": 0.0});
-        let msg = self.post(body).await?;
+        if self.is_anthropic() {
+            let body = json!({"model": self.model, "max_tokens": 2048, "system": system, "messages": [{"role":"user","content": user}], "thinking": {"type":"adaptive"}});
+            return anthropic_text(&self.post_anthropic(body).await?);
+        }
+        let msg = self.post_openai(json!({"model": self.model, "messages": [{"role":"system","content":system},{"role":"user","content":user}], "temperature": 0.0})).await?;
         Ok(msg.get("content").and_then(|c| c.as_str()).unwrap_or("").to_string())
     }
 
-    /// agent 循环:带 tools 调用,LLM 调工具 -> 架构执行 -> 喂回 -> 直到出最终文本。
+    /// agent 循环:协议无关的工具调用，工具执行仍完全由 AAOS 架构控制。
     pub async fn chat_with_tools(&self, system: &str, user: &str, tools: &[Value], max_iters: usize) -> Result<String> {
-        let mut messages = vec![
-            json!({"role": "system", "content": system}),
-            json!({"role": "user", "content": user}),
-        ];
+        if self.is_anthropic() { return self.chat_with_tools_anthropic(system, user, tools, max_iters).await; }
+        let mut messages = vec![json!({"role":"system","content":system}), json!({"role":"user","content":user})];
         for i in 0..max_iters {
-            let body = json!({"model": self.model, "messages": messages, "tools": tools, "tool_choice": "auto", "temperature": 0.0});
-            let msg = self.post(body).await?;
-            let tool_calls = msg.get("tool_calls").and_then(|t| t.as_array());
-            if let Some(tcs) = tool_calls {
-                if tcs.is_empty() {
-                    return Ok(msg.get("content").and_then(|c| c.as_str()).unwrap_or("").to_string());
-                }
-                messages.push(msg.clone());
-                for tc in tcs {
-                    let fname = tc.get("function").and_then(|f| f.get("name")).and_then(|n| n.as_str()).unwrap_or("");
-                    let args_str = tc.get("function").and_then(|f| f.get("arguments")).and_then(|a| a.as_str()).unwrap_or("{}");
-                    let args: Value = serde_json::from_str(args_str).unwrap_or(Value::Null);
-                    let result = execute_tool(fname, &args).await;
-                    let id = tc.get("id").and_then(|x| x.as_str()).unwrap_or("");
-                    tracing::info!("agent iter {i}: 工具 {fname}({args_str}) -> {}", result.chars().take(120).collect::<String>());
-                    messages.push(json!({"role": "tool", "tool_call_id": id, "content": result}));
-                }
-                continue;
+            let msg = self.post_openai(json!({"model": self.model, "messages": messages, "tools": tools, "tool_choice": "auto", "temperature": 0.0})).await?;
+            let calls = openai_tool_calls(&msg)?;
+            if calls.is_empty() { return Ok(msg.get("content").and_then(|c| c.as_str()).unwrap_or("").to_string()); }
+            messages.push(msg);
+            for call in calls {
+                let result = execute_tool(&call.name, &call.input).await;
+                tracing::info!("agent iter {i}: 工具 {}({}) -> {}", call.name, call.input, result.chars().take(120).collect::<String>());
+                messages.push(json!({"role":"tool","tool_call_id":call.id,"content":result}));
             }
-            return Ok(msg.get("content").and_then(|c| c.as_str()).unwrap_or("").to_string());
         }
-        // 超过 max_iters,做最后一次无工具调用强制输出
         tracing::warn!("chat_with_tools 超过 {max_iters} 轮,强制无工具输出");
-        let body = json!({"model": self.model, "messages": messages, "temperature": 0.0});
-        let msg = self.post(body).await?;
+        let msg = self.post_openai(json!({"model": self.model, "messages": messages, "temperature": 0.0})).await?;
         Ok(msg.get("content").and_then(|c| c.as_str()).unwrap_or("").to_string())
     }
+
+    async fn chat_with_tools_anthropic(&self, system: &str, user: &str, tools: &[Value], max_iters: usize) -> Result<String> {
+        let mut messages = vec![json!({"role":"user","content": user})];
+        let anthropic_tools: Vec<Value> = tools.iter().map(to_anthropic_tool).collect();
+        for i in 0..max_iters {
+            let body = json!({"model": self.model, "max_tokens": 4096, "system": system, "messages": messages, "tools": anthropic_tools, "tool_choice": {"type":"auto"}, "thinking": {"type":"adaptive"}});
+            let response = self.post_anthropic(body).await?;
+            let calls = anthropic_tool_calls(&response)?;
+            if calls.is_empty() { return anthropic_text(&response); }
+            // Anthropic requires the complete assistant content blocks to be replayed.
+            let content = response.get("content").cloned().context("Anthropic response missing content")?;
+            messages.push(json!({"role":"assistant","content":content}));
+            let mut results = Vec::new();
+            for call in calls {
+                let result = execute_tool(&call.name, &call.input).await;
+                tracing::info!("agent iter {i}: 工具 {}({}) -> {}", call.name, call.input, result.chars().take(120).collect::<String>());
+                results.push(json!({"type":"tool_result","tool_use_id":call.id,"content":result}));
+            }
+            messages.push(json!({"role":"user","content":results}));
+        }
+        anyhow::bail!("Anthropic tool loop exceeded {max_iters} iterations (provider={} model={})", self.provider_type, self.model)
+    }
+}
+
+fn to_anthropic_tool(tool: &Value) -> Value {
+    let f = tool.get("function").unwrap_or(tool);
+    json!({"name": f.get("name").and_then(Value::as_str).unwrap_or(""), "description": f.get("description").and_then(Value::as_str).unwrap_or(""), "input_schema": f.get("parameters").cloned().unwrap_or_else(|| json!({"type":"object","properties":{},"additionalProperties":false}))})
+}
+
+fn openai_tool_calls(msg: &Value) -> Result<Vec<ToolCall>> {
+    let mut out = Vec::new();
+    for tc in msg.get("tool_calls").and_then(Value::as_array).cloned().unwrap_or_default() {
+        let f = tc.get("function").context("OpenAI tool call missing function")?;
+        let name = f.get("name").and_then(Value::as_str).context("OpenAI tool call missing name")?;
+        let raw = f.get("arguments").and_then(Value::as_str).unwrap_or("{}");
+        let input = serde_json::from_str(raw).context("malformed OpenAI tool arguments")?;
+        out.push(ToolCall { id: tc.get("id").and_then(Value::as_str).unwrap_or("").to_string(), name: name.to_string(), input });
+    }
+    Ok(out)
+}
+
+fn anthropic_tool_calls(response: &Value) -> Result<Vec<ToolCall>> {
+    let mut out = Vec::new();
+    for block in response.get("content").and_then(Value::as_array).cloned().unwrap_or_default() {
+        if block.get("type").and_then(Value::as_str) != Some("tool_use") { continue; }
+        out.push(ToolCall { id: block.get("id").and_then(Value::as_str).context("Anthropic tool_use missing id")?.to_string(), name: block.get("name").and_then(Value::as_str).context("Anthropic tool_use missing name")?.to_string(), input: block.get("input").cloned().unwrap_or_else(|| json!({})) });
+    }
+    Ok(out)
+}
+
+fn anthropic_text(response: &Value) -> Result<String> {
+    let text: String = response.get("content").and_then(Value::as_array).cloned().unwrap_or_default().into_iter().filter_map(|b| if b.get("type").and_then(Value::as_str) == Some("text") { b.get("text").and_then(Value::as_str).map(str::to_string) } else { None }).collect::<Vec<_>>().join("");
+    if text.is_empty() && response.get("stop_reason").and_then(Value::as_str) == Some("refusal") { anyhow::bail!("Anthropic model refusal: {}", response); }
+    Ok(text)
 }
 
 /// 工具定义:list_agents + get_system_context + check_state + get_task_pattern
@@ -227,23 +288,33 @@ pub fn parse_plan(text: &str) -> Result<Option<Plan>> {
 }
 
 /// Core 正向:NL -> LLM 原始输出(可能是 Intent JSON,也可能是直接回复)。
-/// 没配 core.model 返回 None(回退规则)。由 core.rs parse_intent 判断。
+/// 主模型失败时按配置尝试 fallback；只有 fallback 也失败才回退规则。
 pub async fn schedule_to_intent(input: &str, library: &ModelLibrary) -> Result<Option<String>> {
     let core = &library.core;
-    if core.provider.is_empty() || core.model.is_empty() {
-        return Ok(None);
-    }
-    let provider = library
-        .find_provider(&core.provider)
-        .ok_or_else(|| anyhow::anyhow!("core provider '{}' 不在模型库", core.provider))?;
-    let client = LlmClient::from_provider(provider, &core.model);
+    if core.provider.is_empty() || core.model.is_empty() { return Ok(None); }
     let system = "你是 NAS 调度助手(Core Agent)。用工具查知识库完成任务调度:\n- list_agents:查 agent+action\n- get_system_context:查 NAS 配置(L2)\n- check_state:查实时状态(L3)\n- get_task_pattern:查任务调度模式(复杂任务该拆成哪些步骤)\n\n查完后输出调度决策:\n- 单步:{\"agent\":\"...\",\"action\":\"...\",\"args\":{}}\n- 多步:{\"steps\":[...]}\n- 破坏性操作:输出 Intent 让用户确认\n- 预检不过:直接回复原因";
     let tools = tools();
-    let resp = client.chat_with_tools(system, input, &tools, 5).await?;
-    if resp.trim().is_empty() {
-        anyhow::bail!("LLM 返回空");
+    let provider = library.find_provider(&core.provider).ok_or_else(|| anyhow::anyhow!("core provider '{}' 不在模型库", core.provider))?;
+    let primary = LlmClient::from_provider(provider, &core.model);
+    match primary.chat_with_tools(system, input, &tools, 5).await {
+        Ok(resp) => {
+            if resp.trim().is_empty() { anyhow::bail!("LLM 返回空"); }
+            return Ok(Some(resp));
+        },
+        Err(err) => {
+            tracing::warn!("LLM 主模型失败 provider={} model={} error={:#}", core.provider, core.model, err);
+            if !core.fallback_provider.is_empty() && !core.fallback_model.is_empty() {
+                if let Some(fp) = library.find_provider(&core.fallback_provider) {
+                    let fallback = LlmClient::from_provider(fp, &core.fallback_model);
+                    match fallback.chat_with_tools(system, input, &tools, 5).await {
+                        Ok(resp) => { tracing::info!("LLM fallback 成功 provider={} model={}", core.fallback_provider, core.fallback_model); return Ok(Some(resp)); }
+                        Err(ferr) => tracing::error!("LLM fallback 失败 provider={} model={} error={:#}", core.fallback_provider, core.fallback_model, ferr),
+                    }
+                }
+            }
+            Err(err)
+        }
     }
-    Ok(Some(resp))
 }
 
 /// Core 反向:ActionResult -> NL(把结构化结果翻成人话给用户)。
