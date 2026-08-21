@@ -19,7 +19,7 @@
 | 容器 | qBittorrent(8080) / Alist(5244) / Home Assistant(8123, host+privileged) / Jellyfin(8096)，配置集中于 downloads 盘 `appdata/`，`podman-restart.service` 开机自启 |
 | 影视链路 | `media/{movies,tv,anime}` 媒体树 + Jellyfin 展示端；下载完成的资源由 [media-organizer](scripts/media-organizer.py) 自动软链归位（跨盘不破坏做种） |
 | SMB | media/downloads/backup 三共享已导出+授权+passdb，`bing` 账号可读写访问 |
-| KB | 以上事实（挂载点/镜像/端口/凭据 env/镜像源约定）已写入 `kb-context.json`（L2），Core 调度可直接感知 |
+| KB | 机器上下文（目录/容器/端口/策略）已写入 `kb-context.json`，作为预检的 L1 系统上下文，用来明确任务目标与执行对象 |
 
 **踩坑记录**（对二次部署直接有用）：
 
@@ -177,8 +177,8 @@ qbit 完成钩子(架构事件)        ← 事件源,无需轮询
 - **破坏性确认**：删除/清理操作需 token + 安全口令(AAOS_SAFE_PWD)二次确认,三前端(CLI/Web/微信)统一
 - **每日巡检**：每天 08:00 自动健康检查
 - **规则优先**：常见查询秒回，跳过 LLM
-- **三层知识库**：L1 通用 + L2 系统 + L3 实时状态，准确率 100%（17/17）
-  - ⚠️ **KB 分层须知**：预设 agent 的 KB（如 [kb-download.json](kb-download.json)）目前混含两层内容--**通用知识**（API 端点/鉴权流程/故障模式库，如 6881 被 PT 站封禁、reannounce 解法）应随发行版共享；**机器实况**（监听端口/落盘路径/账号状态）属于单机，规范存放地是 `kb-context.json`（部署时按真机配置，见 DEPLOY-GUIDE 第六步），不应从模板继承。后续计划把两者拆分，机器层由部署时的 discover 动作现场生成（与动态 agent 的自动发现同机制）
+- **三层预检机制**：正式执行前依次执行 **L1 系统上下文**（明确任务目标与对象）→ **L2 查询知识架构**（查询 KB/LLM/网络知识）→ **L3 系统实时状态**（确认当前是否具备执行条件），准确率 100%（17/17）
+  - ⚠️ **术语说明**：这里的 L1/L2/L3 是**任务预检阶段**，不是知识可信度分级。预设 agent 的 KB（如 [kb-download.json](kb-download.json)）目前混含通用知识与机器实况；机器实况规范存放于 `kb-context.json`，部署时按真机配置，不应从模板继承。
 - **🔄 动态自扩展**：部署服务自动生成 KB + agent(三档发现:OpenAPI / DRF OPTIONS / LLM 读文档),支持 JWT 登录鉴权,无需写代码
 - **MiniMax 模型路由**：MiniMax-M3 通过 Anthropic-compatible API 作为复杂工具调度/视觉基线（1M context）；MiniMax-M2.7-highspeed 作为快速文本/备用。协议适配与 fallback 由 LLM 模块统一处理，模型只是可替换认知组件，agency 仍由 AAOS 架构交付。
 

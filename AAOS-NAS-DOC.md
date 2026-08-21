@@ -36,9 +36,9 @@ AAOS-NAS 将 AAOS(AI Agents Operating System)架构植入 OpenMediaVault 8,实�
   │
   ▼
 Core Agent(LLM: deepseek-v4-pro)
-  │  L1 通用知识(LLM 内置)
-  │  L2 系统知识(kb-context.json,工具查)
-  │  L3 实时状态(system-agent/check_state,工具查)
+  │  L1 系统上下文(kb-context.json,工具查:明确目标/对象)
+  │  L2 查询知识架构(KB优先,LLM推理,必要时网络搜索)
+  │  L3 系统实时状态(system-agent/check_state,工具查)
   │  调度模式(kb-tasks.json,工具查)
   │
   ├── 查知识库(4 个工具)
@@ -69,13 +69,15 @@ Sentinel: 全程审计日志(独立进程)
 每日巡检: systemd timer 08:00 -> NL 报告
 ```
 
-### 三层知识库
+### 三阶段任务预检
 
-| 层 | 类型 | 存储内容 | 使用者 | 实现 |
-|---|---|---|---|---|
-| L1 | 通用知识库 | 什么是文件/Docker/CLI 基本用法 | Core Agent | LLM 内置(无文件) |
-| L2 | 系统知识库 | NAS 目录结构/Docker 服务/备份策略/硬件配置 | Core Agent | kb-context.json |
-| L3 | 实时状态 | 磁盘使用率/运行容器/SMART 预警 | Core Agent(预检) | system-agent/check_state |
+| 阶段 | 名称 | 作用 | 典型来源 |
+|---|---|---|---|
+| L1 | 系统上下文 | 明确用户目标、任务对象和本机相关配置 | `kb-context.json` / `get_system_context` |
+| L2 | 查询知识架构 | 优先查询确定性 KB；不足时使用 LLM 推理，必要时联网搜索并保留来源 | agent KB / `search_knowledge` / web |
+| L3 | 系统实时状态 | 确认磁盘、容器、SMART、内存等当前是否具备执行条件 | `system-agent/check_state` |
+
+> 这里的 L1/L2/L3 是**执行前预检阶段**，不是知识可信度分级。知识来源的优先级是 KB（确定性知识）→ LLM（可能有幻觉的模型知识）→ 网络（带来源的外部动态知识）。
 
 ### 调度模式知识库(kb-tasks.json)
 复杂任务分解模式,Core 用 get_task_pattern 工具查询,不靠 prompt 教怎么拆任务。
@@ -85,8 +87,8 @@ Sentinel: 全程审计日志(独立进程)
 ## 3. Core Agent
 
 ### 职责
-1. 理解自然语言(L1)
-2. 查知识库(L2/L3/调度模式)
+1. 明确目标与对象(L1 系统上下文)
+2. 查询知识架构(L2: KB 优先,必要时 LLM/网络)
 3. 输出调度决策(Intent/Plan,快速语言)
 4. 预检:L3 查实时状态,判断能否执行;不过则直接回复用户
 5. 翻译:ActionResult -> 自然语言返回用户
@@ -337,7 +339,7 @@ ExecStart=/usr/local/bin/aaos-core --socket /run/aaos/core.sock --sentinel-socke
 |---|---|---|
 | `models.toml` | `/etc/aaos/` | 模型库(provider/model/fallback) |
 | `agents.json` | `/etc/aaos/` | Agent 注册表(8 agent / 70 action) |
-| `kb-context.json` | `/etc/aaos/` | L2 系统知识库(NAS 配置) |
+| `kb-context.json` | `/etc/aaos/` | L1 系统上下文(明确任务目标/对象) |
 | `kb-tasks.json` | `/etc/aaos/` | 调度模式(13 个任务模板) |
 | `kb-nas.json` | `/etc/aaos/` | OMV RPC 方法目录(265 方法) |
 | `env` | `/etc/aaos/` | 环境变量(ARK_API_KEY, HA_TOKEN) |
@@ -390,7 +392,7 @@ truenas-aaos/
 ├── Cargo.toml                    # Rust 项目(toml + reqwest + serde + tokio + clap)
 ├── models.toml                   # 模型库配置
 ├── agents.json                   # Agent 注册表(8 agent / 70 action)
-├── kb-context.json               # L2 系统知识库
+├── kb-context.json               # L1 系统上下文
 ├── kb-tasks.json                 # 调度模式(13 模式)
 ├── kb-nas.json                   # OMV RPC 方法目录(265 方法)
 ├── src/

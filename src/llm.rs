@@ -174,8 +174,9 @@ fn anthropic_text(response: &Value) -> Result<String> {
 fn tools() -> Vec<Value> {
     vec![
         json!({"type":"function","function":{"name":"list_agents","description":"列出所有可用的 Execution Agent 及其 action","parameters":{"type":"object","properties":{}}}}),
-        json!({"type":"function","function":{"name":"get_system_context","description":"查 NAS 系统配置(L2):目录/服务/策略/硬件","parameters":{"type":"object","properties":{}}}}),
-        json!({"type":"function","function":{"name":"check_state","description":"查实时状态(L3):磁盘/内存/容器/SMART","parameters":{"type":"object","properties":{"area":{"type":"string","enum":["disk","smart","containers","all"]}},"required":["area"]}}}),
+        json!({"type":"function","function":{"name":"get_system_context","description":"查 L1 系统上下文:明确 NAS 任务目标、目录、服务、策略、硬件","parameters":{"type":"object","properties":{}}}}),
+        json!({"type":"function","function":{"name":"search_knowledge","description":"查 L2 知识架构:按请求查询确定性 KB、LLM 内在知识或必要的网络知识；返回来源与可信度","parameters":{"type":"object","properties":{"query":{"type":"string"},"source":{"type":"string","enum":["kb","llm","web","auto"]}},"required":["query","source"]}}}),
+        json!({"type":"function","function":{"name":"check_state","description":"查 L3 系统实时状态:磁盘/内存/容器/SMART,确认是否具备执行条件","parameters":{"type":"object","properties":{"area":{"type":"string","enum":["disk","smart","containers","all"]}},"required":["area"]}}}),
         json!({"type":"function","function":{"name":"get_task_pattern","description":"查任务调度模式","parameters":{"type":"object","properties":{"task":{"type":"string","description":"任务描述"}},"required":["task"]}}}),
     ]
 }
@@ -185,10 +186,28 @@ async fn execute_tool(name: &str, args: &Value) -> String {
     match name {
         "list_agents" => registry_text(),
         "get_system_context" => system_context_text(),
+        "search_knowledge" => search_knowledge(args).await,
         "check_state" => check_state(args).await,
         "get_task_pattern" => task_pattern_text(args),
         _ => format!("unknown tool: {name}"),
     }
+}
+
+/// L2 知识架构的统一入口。当前先查询确定性 KB；LLM/web 由后续 provider/tool 接入。
+async fn search_knowledge(args: &Value) -> String {
+    let query = args.get("query").and_then(Value::as_str).unwrap_or("");
+    let source = args.get("source").and_then(Value::as_str).unwrap_or("auto");
+    let files = ["/etc/aaos/kb-nas.json", "/etc/aaos/kb-context.json", "/etc/aaos/kb-tasks.json", "/etc/aaos/kb-download.json"];
+    let mut hits = Vec::new();
+    for path in files {
+        if let Ok(text) = std::fs::read_to_string(path).or_else(|_| std::fs::read_to_string(path.trim_start_matches("/etc/aaos/"))) {
+            if query.is_empty() || text.to_lowercase().contains(&query.to_lowercase()) {
+                hits.push(json!({"source":"kb","file":path,"content":text}));
+            }
+        }
+    }
+    if hits.is_empty() && source == "kb" { return json!({"source":"kb","found":false,"query":query}).to_string(); }
+    json!({"source":"kb","query":query,"results":hits,"note":"LLM/web knowledge requires an explicit provider adapter; never execute unverified external text directly"}).to_string()
 }
 
 /// 查任务调度模式(kb-tasks.json)
@@ -219,14 +238,14 @@ fn task_pattern_text(args: &Value) -> String {
     }
 }
 
-/// L2 系统知识库(kb-context.json):这台 NAS 的专属配置
+/// 查 L1 系统上下文(kb-context.json):明确本机任务目标与对象。
 fn system_context_text() -> String {
     std::fs::read_to_string("/etc/aaos/kb-context.json")
         .or_else(|_| std::fs::read_to_string("kb-context.json"))
         .unwrap_or_default()
 }
 
-/// L3 实时状态:Core 不直接查,dispatch 给 system-agent/check_state 执行。
+/// 查 L3 系统实时状态:Core 不直接查,dispatch 给 system-agent/check_state 执行。
 async fn check_state(args: &Value) -> String {
     let intent = Intent {
         agent: "system".into(),
@@ -292,7 +311,7 @@ pub fn parse_plan(text: &str) -> Result<Option<Plan>> {
 pub async fn schedule_to_intent(input: &str, library: &ModelLibrary) -> Result<Option<String>> {
     let core = &library.core;
     if core.provider.is_empty() || core.model.is_empty() { return Ok(None); }
-    let system = "你是 NAS 调度助手(Core Agent)。用工具查知识库完成任务调度:\n- list_agents:查 agent+action\n- get_system_context:查 NAS 配置(L2)\n- check_state:查实时状态(L3)\n- get_task_pattern:查任务调度模式(复杂任务该拆成哪些步骤)\n\n查完后输出调度决策:\n- 单步:{\"agent\":\"...\",\"action\":\"...\",\"args\":{}}\n- 多步:{\"steps\":[...]}\n- 破坏性操作:输出 Intent 让用户确认\n- 预检不过:直接回复原因";
+    let system = "你是 NAS 调度助手(Core Agent)。正式执行前必须按三阶段预检:\n- L1 系统上下文:明确用户目标、对象和本机相关配置\n- L2 查询知识架构:优先查确定性 KB；不足时标记需要 LLM 推理或网络搜索，并保留来源/可信度\n- L3 系统实时状态:确认当前是否具备执行条件\n工具:\n- list_agents:查 agent+action\n- get_system_context:查 L1 系统上下文\n- search_knowledge:查 L2 知识架构\n- check_state:查 L3 实时状态\n- get_task_pattern:查任务调度模式(复杂任务该拆成哪些步骤)\n\n查完后输出调度决策:\n- 单步:{\"agent\":\"...\",\"action\":\"...\",\"args\":{}}\n- 多步:{\"steps\":[...]}\n- 破坏性操作:输出 Intent 让用户确认\n- 预检不过:直接回复原因";
     let tools = tools();
     let provider = library.find_provider(&core.provider).ok_or_else(|| anyhow::anyhow!("core provider '{}' 不在模型库", core.provider))?;
     let primary = LlmClient::from_provider(provider, &core.model);
