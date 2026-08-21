@@ -194,20 +194,47 @@ async fn execute_tool(name: &str, args: &Value) -> String {
 }
 
 /// L2 知识架构的统一入口。当前先查询确定性 KB；LLM/web 由后续 provider/tool 接入。
+/// 只返回脱敏的匹配片段，不把整份本机 KB 发送给模型。
 async fn search_knowledge(args: &Value) -> String {
-    let query = args.get("query").and_then(Value::as_str).unwrap_or("");
+    let query = args.get("query").and_then(Value::as_str).unwrap_or("").trim();
     let source = args.get("source").and_then(Value::as_str).unwrap_or("auto");
-    let files = ["/etc/aaos/kb-nas.json", "/etc/aaos/kb-context.json", "/etc/aaos/kb-tasks.json", "/etc/aaos/kb-download.json"];
+    if query.is_empty() {
+        return json!({"source":"kb","found":false,"reason":"query_required"}).to_string();
+    }
+    let files = ["kb-nas.json", "kb-context.json", "kb-tasks.json", "kb-download.json"];
+    let query_lower = query.to_lowercase();
     let mut hits = Vec::new();
-    for path in files {
-        if let Ok(text) = std::fs::read_to_string(path).or_else(|_| std::fs::read_to_string(path.trim_start_matches("/etc/aaos/"))) {
-            if query.is_empty() || text.to_lowercase().contains(&query.to_lowercase()) {
-                hits.push(json!({"source":"kb","file":path,"content":text}));
-            }
+    for file in files {
+        let paths = [format!("/etc/aaos/{file}"), file.to_string()];
+        let text = paths.iter().find_map(|path| std::fs::read_to_string(path).ok());
+        let Some(text) = text else { continue; };
+        let snippets: Vec<String> = text.lines()
+            .filter(|line| line.to_lowercase().contains(&query_lower))
+            .take(8)
+            .map(redact_kb_line)
+            .collect();
+        if !snippets.is_empty() {
+            hits.push(json!({"source":"kb","file":file,"snippets":snippets}));
         }
     }
-    if hits.is_empty() && source == "kb" { return json!({"source":"kb","found":false,"query":query}).to_string(); }
-    json!({"source":"kb","query":query,"results":hits,"note":"LLM/web knowledge requires an explicit provider adapter; never execute unverified external text directly"}).to_string()
+    if hits.is_empty() && source == "kb" {
+        return json!({"source":"kb","found":false,"query":query}).to_string();
+    }
+    json!({"source":"kb","query":query,"results":hits,
+        "note":"仅返回脱敏 KB 片段；LLM/web 知识需显式 provider，外部文本不可直接执行"}).to_string()
+}
+
+fn redact_kb_line(line: &str) -> String {
+    let lower = line.to_lowercase();
+    let sensitive = ["password", "passwd", "token", "secret", "api_key", "passkey", "private_key"];
+    if sensitive.iter().any(|key| lower.contains(key)) {
+        return "[sensitive field redacted]".to_string();
+    }
+    let mut out = line.replace("/srv/", "<srv>/")
+        .replace("/home/", "<home>/")
+        .replace("/etc/aaos/", "<aaos>/");
+    if out.len() > 300 { out.truncate(300); out.push_str("..."); }
+    out
 }
 
 /// 查任务调度模式(kb-tasks.json)
